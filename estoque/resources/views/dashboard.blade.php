@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Sistema de Estoque - Dashboard')
+@section('title', 'Sistema de Estoque')
 
 @push('styles')
 <!-- Carrega o Chart.js especificamente para a dashboard -->

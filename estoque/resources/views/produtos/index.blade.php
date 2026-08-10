@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Sistema de Estoque - Produtos')
+@section('title', 'Produtos')
 
 @push('styles')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
@@ -8,9 +8,10 @@
 
 @section('content')
 <div class="container-fluid p-4">
+    <!-- CABEÇALHO -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 fw-bold mb-0">Controle de <span class="text-laravel">Estoque</span></h1>
+            <h1 class="h3 fw-bold mb-0">Gerenciamento de <span class="text-laravel">Produtos</span></h1>
             <small class="text-secondary">Painel Server-Side com Laravel e DataTables</small>
         </div>
         <button class="btn btn-laravel px-4 py-2" id="btnNovoProduto">

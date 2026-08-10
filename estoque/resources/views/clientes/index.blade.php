@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Gerenciamento de Clientes')
+@section('title', 'Clientes')
 
 @push('styles')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
@@ -11,7 +11,7 @@
     <!-- CABEÇALHO -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 fw-bold mb-0 text-white">Gerenciamento de <span class="text-laravel">Clientes</span></h1>
+            <h1 class="h3 fw-bold mb-0">Gerenciamento de <span class="text-laravel">Clientes</span></h1>
             <small class="text-secondary">Painel Server-Side com Laravel e DataTables</small>
         </div>
         <button class="btn btn-laravel px-4 py-2" id="btnNovoCliente">
