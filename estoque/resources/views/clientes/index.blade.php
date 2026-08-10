@@ -92,5 +92,6 @@
             clientesStore: "{{ route('clientes.store') }}"
         };
     </script>
+    <script src="{{ asset('js/datatables-defaults.js') }}"></script>
     <script src="{{ asset('js/clientes.js') }}"></script>
 @endpush

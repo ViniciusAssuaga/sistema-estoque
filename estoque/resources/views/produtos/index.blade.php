@@ -124,5 +124,6 @@
     </script>
 
     <!-- Chamando o arquivo JS externo -->
+    <script src="{{ asset('js/datatables-defaults.js') }}"></script>
     <script src="{{ asset('js/produtos.js') }}"></script>
 @endpush

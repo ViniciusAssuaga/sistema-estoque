@@ -5,17 +5,10 @@ $(document).ready(function() {
         }
     });
 
-    const tabelaClientes = $('#tabela-clientes').DataTable({
+    const tabelaClientes = $('#tabela-clientes').DataTable(window.getDataTableDefaults({
         processing: true,
         serverSide: true,
-        dom: "<'row mb-3 align-items-center'<'col-sm-12 col-md-3'l><'col-sm-12 col-md-4'f><'col-sm-12 col-md-5 d-flex justify-content-end'p>>" +
-             "<'row'<'col-sm-12'tr>>" +
-             "<'row mt-3 align-items-center'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-end'p>>",
         ajax: window.routes.clientesIndex,
-        lengthMenu: [
-            [10, 20, 50, 100, 1000, 20000],
-            [10, 20, 50, 100, 1000, 20000]
-        ],
         columns: [
             { data: 'nome', name: 'nome' },
             { data: 'email', name: 'email' },
@@ -23,12 +16,8 @@ $(document).ready(function() {
             { data: 'cpf_cnpj', name: 'cpf_cnpj' },
             { data: 'acoes', name: 'acoes', orderable: false, searchable: false, className: 'text-end' }
         ],
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json',
-            processing: '<div class="spinner-custom"></div>'
-        },
         order: [[0, 'asc']]
-    });
+    }));
 
     $('#btnNovoCliente').on('click', function() {
         $('#formCliente')[0].reset();
