@@ -111,11 +111,12 @@
 @endsection
 
 @push('scripts')
+    <!-- Bibliotecas externas que continuam via CDN -->
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     
-    <!-- Passando rotas do Laravel para o JS externo -->
+    <!-- Passando rotas do Laravel para o JS global -->
     <script>
         window.routes = {
             produtosIndex: "{{ route('produtos.index') }}",
@@ -123,6 +124,6 @@
         };
     </script>
 
-    <!-- Chamando o arquivo JS externo -->
+    <!-- Chamando o script gerencial através do Vite -->
     <script src="{{ asset('js/produtos.js') }}"></script>
 @endpush
