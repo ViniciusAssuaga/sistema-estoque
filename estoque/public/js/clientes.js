@@ -5,107 +5,64 @@ $(document).ready(function() {
         }
     });
 
-    $('.money').mask('#.##0,00', { reverse: true });
-
-    $('#sku').on('input', function() {
-        this.value = this.value.toUpperCase();
-    });
-
-    // Se já existir uma instância prévia na mesma tabela, destrói antes de criar
-    if ($.fn.DataTable.isDataTable('#tabela-produtos')) {
-        $('#tabela-produtos').DataTable().destroy();
-    }
-
-    const tabela = $('#tabela-produtos').DataTable({
+    const tabelaClientes = $('#tabela-clientes').DataTable({
         processing: true,
         serverSide: true,
         dom: "<'row mb-3 align-items-center'<'col-sm-12 col-md-3'l><'col-sm-12 col-md-4'f><'col-sm-12 col-md-5 d-flex justify-content-end'p>>" +
              "<'row'<'col-sm-12'tr>>" +
              "<'row mt-3 align-items-center'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-end'p>>",
-        ajax: window.routes.produtosIndex,
+        ajax: window.routes.clientesIndex,
         lengthMenu: [
             [10, 20, 50, 100, 1000, 20000],
             [10, 20, 50, 100, 1000, 20000]
         ],
         columns: [
-            { data: 'sku', name: 'sku' },
             { data: 'nome', name: 'nome' },
-            { data: 'preco_custo_formatted', name: 'preco_custo' },
-            { data: 'preco_venda_formatted', name: 'preco_venda' },
-            { data: 'estoque_badge', name: 'quantidade_estoque' },
-            { data: 'status_badge', name: 'ativo' },
-            { data: 'acoes', name: 'acoes', orderable: false, searchable: false }
+            { data: 'email', name: 'email' },
+            { data: 'telefone', name: 'telefone' },
+            { data: 'cpf_cnpj', name: 'cpf_cnpj' },
+            { data: 'acoes', name: 'acoes', orderable: false, searchable: false, className: 'text-end' }
         ],
         language: {
-            url: 'https://cdn.jsdelivr.net/npm/datatables.net-plugins@1.13.6/i18n/pt-BR.json',
+            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json',
             processing: '<div class="spinner-custom"></div>'
         },
-        order: [[1, 'asc']]
+        order: [[0, 'asc']]
     });
 
-    $('#btnNovoProduto').on('click', function() {
-        $('#formProduto')[0].reset();
-        $('#produto_id').val('');
+    $('#btnNovoCliente').on('click', function() {
+        $('#formCliente')[0].reset();
+        $('#cliente_id').val('');
         $('#alertErros').addClass('d-none');
         $('#listaErros').empty();
-        $('#ativo').prop('checked', true);
-
-        $('#modalTitulo').html('Cadastrar Novo <span class="text-laravel">Produto</span>');
-        $('#btnSalvar').text('Salvar Produto');
-        
-        $('#modalProduto').modal('show');
+        $('#modalTitulo').html('Cadastrar Novo <span class="text-laravel">Cliente</span>');
+        $('#btnSalvar').text('Salvar Cliente');
+        $('#modalCliente').modal('show');
     });
 
-    $(document).on('click', '.btn-editar', function() {
-        const id = $(this).data('id');
-        
-        $('#alertErros').addClass('d-none');
-        $('#listaErros').empty();
-
-        $.get(`/produtos/${id}/edit`, function(data) {
-            $('#produto_id').val(data.id);
-            $('#sku').val(data.sku);
-            $('#nome').val(data.nome);
-            
-            $('#preco_custo').val(parseFloat(data.preco_custo).toLocaleString('pt-BR', { minimumFractionDigits: 2 }));
-            $('#preco_venda').val(parseFloat(data.preco_venda).toLocaleString('pt-BR', { minimumFractionDigits: 2 }));
-            
-            $('#quantidade_estoque').val(data.quantidade_estoque);
-            $('#estoque_minimo').val(data.estoque_minimo);
-            $('#descricao').val(data.descricao);
-            $('#ativo').prop('checked', Boolean(data.ativo));
-
-            $('#modalTitulo').html('Editar <span class="text-laravel">Produto</span>');
-            $('#btnSalvar').text('Atualizar Produto');
-
-            $('#modalProduto').modal('show');
-        });
-    });
-
-    $('#formProduto').on('submit', function(e) {
+    $('#formCliente').on('submit', function(e) {
         e.preventDefault();
 
-        const id = $('#produto_id').val();
+        const id = $('#cliente_id').val();
         const isEdit = id !== '';
-        
-        const url = isEdit ? `/produtos/${id}` : window.routes.produtosStore;
+        const url = isEdit ? `/clientes/${id}` : window.routes.clientesStore;
         const method = isEdit ? 'PUT' : 'POST';
 
         $('#alertErros').addClass('d-none');
         $('#listaErros').empty();
-        
+
         const $btn = $('#btnSalvar');
         const textoOriginal = $btn.text();
+        $btn.prop('disabled', true).text('Salvando...');
 
         $.ajax({
             url: url,
             method: method,
             data: $(this).serialize(),
             success: function(response) {
-                $('#modalProduto').modal('hide');
+                $('#modalCliente').modal('hide');
                 $btn.prop('disabled', false).text(textoOriginal);
-
-                tabela.ajax.reload(null, false);
+                tabelaClientes.ajax.reload(null, false);
 
                 Swal.fire({
                     icon: 'success',
@@ -141,11 +98,30 @@ $(document).ready(function() {
         });
     });
 
+    $(document).on('click', '.btn-editar', function() {
+        const id = $(this).data('id');
+
+        $('#alertErros').addClass('d-none');
+        $('#listaErros').empty();
+
+        $.get(`/clientes/${id}/edit`, function(data) {
+            $('#cliente_id').val(data.id);
+            $('#nome').val(data.nome);
+            $('#email').val(data.email);
+            $('#telefone').val(data.telefone);
+            $('#cpf_cnpj').val(data.cpf_cnpj);
+
+            $('#modalTitulo').html('Editar <span class="text-laravel">Cliente</span>');
+            $('#btnSalvar').text('Atualizar Cliente');
+            $('#modalCliente').modal('show');
+        });
+    });
+
     $(document).on('click', '.btn-excluir', function() {
         const id = $(this).data('id');
 
         Swal.fire({
-            title: 'Excluir Produto?',
+            title: 'Excluir Cliente?',
             text: "Esta ação não poderá ser desfeita!",
             icon: 'warning',
             showCancelButton: true,
@@ -158,10 +134,10 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: `/produtos/${id}`,
+                    url: `/clientes/${id}`,
                     method: 'DELETE',
                     success: function(response) {
-                        tabela.ajax.reload(null, false);
+                        tabelaClientes.ajax.reload(null, false);
 
                         Swal.fire({
                             icon: 'success',
@@ -177,7 +153,7 @@ $(document).ready(function() {
                         Swal.fire({
                             icon: 'error',
                             title: 'Erro!',
-                            text: 'Não foi possível excluir o produto.',
+                            text: 'Não foi possível excluir o cliente.',
                             background: '#1E1E1E',
                             color: '#E0E0E0'
                         });

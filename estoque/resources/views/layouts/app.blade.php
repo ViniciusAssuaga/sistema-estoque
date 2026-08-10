@@ -198,8 +198,8 @@
             font-size: 0 !important;
         }
 
-        /* Oculta qualquer div filha indesejada gerada nativamente pelo DataTables */
-        #tabela-produtos_processing.dataTables_processing > div:not(.spinner-custom) {
+        /* Oculta qualquer elemento gerado nativamente pelo DataTables dentro do loading de qualquer tabela */
+        .dataTables_processing > div:not(.spinner-custom) {
             display: none !important;
         }
 
@@ -244,15 +244,21 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="bi bi-tags"></i>
-                    <span>Categorias</span>
+                <a href="{{ route('clientes.index') }}" class="nav-link {{ request()->routeIs('clientes*') ? 'active' : '' }}">
+                    <i class="bi bi-people"></i>
+                    <span>Clientes</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="#" class="nav-link">
-                    <i class="bi bi-people"></i>
+                    <i class="bi bi-truck"></i>
                     <span>Fornecedores</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="bi bi-tags"></i>
+                    <span>Categorias</span>
                 </a>
             </li>
             <li class="nav-item">

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProdutoController;
+use App\Http\Controllers\ClienteController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -8,5 +10,6 @@ Route::get('/', function () {
 })->name('dashboard');
 
 Route::resource('produtos', ProdutoController::class);
+Route::resource('clientes', ClienteController::class);
 
 ?>
