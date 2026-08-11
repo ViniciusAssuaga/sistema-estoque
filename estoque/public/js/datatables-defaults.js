@@ -1,4 +1,3 @@
-// public/js/datatables-defaults.js (ou no local correto que o Blade lê)
 window.getDataTableDefaults = function(customOptions = {}) {
     return $.extend(true, {
         processing: true,
@@ -11,8 +10,30 @@ window.getDataTableDefaults = function(customOptions = {}) {
             [10, 20, 50, 100, 1000, 20000]
         ],
         language: {
-            url: 'https://cdn.jsdelivr.net/npm/datatables.net-plugins@1.13.6/i18n/pt-BR.json',
-            processing: '<div class="spinner-custom"></div>'
+            processing: '<div class="spinner-custom"></div>',
+            search: "Pesquisar:",
+            lengthMenu: "Mostrar _MENU_ registros",
+            info: "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+            infoEmpty: "Mostrando 0 até 0 de 0 registros",
+            infoFiltered: "(Filtrados de _MAX_ registros no total)",
+            loadingRecords: "Carregando...",
+            zeroRecords: "Nenhum registro encontrado",
+            emptyTable: "Nenhum dado disponível na tabela",
+            paginate: {
+                first: "Primeiro",
+                previous: "Anterior",
+                next: "Próximo",
+                last: "Último"
+            },
+            aria: {
+                sortAscending: ": ativar para ordenar a coluna de forma ascendente",
+                sortDescending: ": ativar para ordenar a coluna de forma descendente"
+            }
         }
     }, customOptions);
 };
+
+// Faz com que qualquer inicialização de DataTable herde esses padrões automaticamente
+if (typeof jQuery !== 'undefined' && $.fn.dataTable) {
+    $.extend(true, $.fn.dataTable.defaults, window.getDataTableDefaults());
+}
