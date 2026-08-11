@@ -2,6 +2,7 @@ window.getDataTableDefaults = function(customOptions = {}) {
     return $.extend(true, {
         processing: true,
         serverSide: true,
+        responsive: true,
         dom: "<'row mb-3 align-items-center'<'col-sm-12 col-md-3'l><'col-sm-12 col-md-4'f><'col-sm-12 col-md-5 d-flex justify-content-end'p>>" +
              "<'row'<'col-sm-12'tr>>" +
              "<'row mt-3 align-items-center'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-end'p>>",

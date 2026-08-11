@@ -30,7 +30,7 @@
                             <th>E-mail</th>
                             <th>Telefone</th>
                             <th>CPF/CNPJ</th>
-                            <th class="text-end">Ações</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody></tbody>

@@ -14,7 +14,7 @@ $(document).ready(function() {
             { data: 'email', name: 'email' },
             { data: 'telefone', name: 'telefone' },
             { data: 'cpf_cnpj', name: 'cpf_cnpj' },
-            { data: 'acoes', name: 'acoes', orderable: false, searchable: false, className: 'text-end' }
+            { data: 'acoes', name: 'acoes', orderable: false, searchable: false }
         ],
         order: [[0, 'asc']]
     }));
