@@ -18,7 +18,12 @@ class ProdutoController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $produtos = Produto::with('categoria'); // <-- Otimizado com eager loading
+            $produtos = Produto::with('categoria');
+
+            // <-- Adicionado o filtro por categoria no Server-Side
+            if ($request->filled('categoria_id')) {
+                $produtos->where('categoria_id', $request->categoria_id);
+            }
 
             return DataTables::of($produtos)
                 ->addColumn('categoria_nome', function ($row) {
@@ -55,7 +60,7 @@ class ProdutoController extends Controller
                 ->make(true);
         }
 
-        $categorias = Categoria::orderBy('nome')->get(); // <-- Envia as categorias para a view
+        $categorias = Categoria::orderBy('nome')->get();
         return view('produtos.index', compact('categorias'));
     }
 

@@ -126,12 +126,18 @@
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     
-    <!-- Passando rotas do Laravel para o JS externo -->
+    <!-- Passando rotas e opções de categorias do Laravel para o JS externo -->
     <script>
         window.routes = {
             produtosIndex: "{{ route('produtos.index') }}",
             produtosStore: "{{ route('produtos.store') }}"
         };
+
+        window.categoriasOptions = `
+            @foreach($categorias as $cat)
+                <option value="{{ $cat->id }}">{{ $cat->nome }}</option>
+            @endforeach
+        `;
     </script>
 
     <!-- Chamando o arquivo JS externo -->

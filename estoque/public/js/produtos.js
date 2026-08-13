@@ -17,19 +17,42 @@ $(document).ready(function() {
     }
 
     const tabela = $('#tabela-produtos').DataTable(window.getDataTableDefaults({
-        ajax: window.routes.produtosIndex,
+        ajax: {
+            url: window.routes.produtosIndex,
+            data: function (d) {
+                d.categoria_id = $('#filtro_categoria').val(); // Envia o ID da categoria selecionada para o servidor
+            }
+        },
         columns: [
             { data: 'sku', name: 'sku' },
             { data: 'nome', name: 'nome' },
-            { data: 'categoria_nome', name: 'categoria.nome' }, // <-- Coluna da Categoria adicionada aqui
+            { data: 'categoria_nome', name: 'categoria.nome' },
             { data: 'preco_custo_formatted', name: 'preco_custo' },
             { data: 'preco_venda_formatted', name: 'preco_venda' },
             { data: 'estoque_badge', name: 'quantidade_estoque' },
             { data: 'status_badge', name: 'ativo' },
             { data: 'acoes', name: 'acoes', orderable: false, searchable: false }
         ],
-        order: [[1, 'asc']]
+        order: [[1, 'asc']],
+        initComplete: function(settings, json) {
+            const selectHtml = `
+                <label class="d-inline-flex align-items-center" style="margin-left: 100px !important; z-index: 10; margin-bottom: 0;">
+                    Categoria:
+                    <select id="filtro_categoria" class="form-select form-select-sm bg-dark text-white border-secondary ms-2" style="width: 180px;">
+                        <option value="">Todas</option>
+                        ${window.categoriasOptions || ''}
+                    </select>
+                </label>
+            `;
+            
+            $('#tabela-produtos_wrapper .dataTables_length').addClass('d-flex align-items-center').append(selectHtml);
+        }
     }));
+
+    // Recarrega a tabela via Ajax sempre que o filtro de categoria for alterado
+    $(document).on('change', '#filtro_categoria', function() {
+        tabela.ajax.reload();
+    });
 
     $('#btnNovoProduto').on('click', function() {
         $('#formProduto')[0].reset();
@@ -54,7 +77,7 @@ $(document).ready(function() {
             $('#produto_id').val(data.id);
             $('#sku').val(data.sku);
             $('#nome').val(data.nome);
-            $('#categoria_id').val(data.categoria_id); // <-- Seta a categoria selecionada no modal
+            $('#categoria_id').val(data.categoria_id);
             
             $('#preco_custo').val(parseFloat(data.preco_custo).toLocaleString('pt-BR', { minimumFractionDigits: 2 }));
             $('#preco_venda').val(parseFloat(data.preco_venda).toLocaleString('pt-BR', { minimumFractionDigits: 2 }));
