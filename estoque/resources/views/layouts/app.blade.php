@@ -48,7 +48,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{{ route('fornecedores.index') }}" class="nav-link {{ request()->routeIs('fornecedores*') ? 'active' : '' }}">
                     <i class="bi bi-truck"></i>
                     <span>Fornecedores</span>
                 </a>

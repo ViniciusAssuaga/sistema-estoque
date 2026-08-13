@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Produto;
 use App\Models\Cliente;
+use App\Models\Fornecedor;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,5 +16,8 @@ class DatabaseSeeder extends Seeder
 
         // Gera 50 registros de clientes de teste
         Cliente::factory()->count(50)->create();
+
+        // Gera 50 registros de fornecedores de teste
+        Fornecedor::factory()->count(50)->create();
     }
 }

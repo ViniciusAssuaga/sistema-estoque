@@ -26,6 +26,7 @@ return [
     */
 
     'attributes' => [
+        // Produtos
         'sku'                => 'SKU / Código',
         'nome'               => 'Nome do Produto',
         'preco_custo'        => 'Preço de Custo',
@@ -34,6 +35,13 @@ return [
         'estoque_minimo'     => 'Estoque Mínimo',
         'descricao'          => 'Descrição',
         'ativo'              => 'Status Ativo',
+
+        // Fornecedores
+        'razao_social'       => 'Razão Social',
+        'nome_fantasia'      => 'Nome Fantasia',
+        'cnpj'               => 'CNPJ',
+        'email'              => 'E-mail',
+        'telefone'           => 'Telefone',
     ],
 
 ];
