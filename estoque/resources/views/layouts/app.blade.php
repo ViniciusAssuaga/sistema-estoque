@@ -54,7 +54,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{{ route('categorias.index') }}" class="nav-link {{ request()->routeIs('categorias*') ? 'active' : '' }}">
                     <i class="bi bi-tags"></i>
                     <span>Categorias</span>
                 </a>

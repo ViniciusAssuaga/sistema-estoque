@@ -20,7 +20,13 @@ class Produto extends Model
         'quantidade_estoque',
         'estoque_minimo',
         'ativo',
+        'categoria_id',
     ];
+
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class);
+    }
 }
 
 ?>

@@ -27,6 +27,7 @@
                         <tr>
                             <th>SKU</th>
                             <th>Nome</th>
+                            <th>Categoria</th>
                             <th>Preço Custo</th>
                             <th>Preço Venda</th>
                             <th>Qtd. Estoque</th>
@@ -67,6 +68,16 @@
                         <div class="col-md-8">
                             <label for="nome" class="form-label fw-semibold">Nome do Produto <span class="text-laravel">*</span></label>
                             <input type="text" class="form-control" id="nome" name="nome" placeholder="Ex: Cadeira Ergonômica" required>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="categoria_id" class="form-label fw-semibold">Categoria <span class="text-laravel">*</span></label>
+                            <select class="form-select bg-dark text-white border-secondary" id="categoria_id" name="categoria_id" required>
+                                <option value=""></option>
+                                @foreach($categorias as $cat)
+                                    <option value="{{ $cat->id }}">{{ $cat->nome }}</option>
+                                @endforeach
+                            </select>
                         </div>
 
                         <div class="col-md-6">

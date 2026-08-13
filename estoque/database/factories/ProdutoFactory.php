@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Produto;
+use App\Models\Categoria;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ProdutoFactory extends Factory
@@ -17,6 +18,7 @@ class ProdutoFactory extends Factory
         return [
             'sku' => strtoupper(fake()->unique()->bothify('PROD-????-#####')),
             'nome' => ucfirst(fake()->words(3, true)),
+            'categoria_id' => Categoria::inRandomOrder()->first()->id,
             'descricao' => fake()->sentence(10),
             'preco_custo' => $precoCusto,
             'preco_venda' => round($precoVenda, 2),

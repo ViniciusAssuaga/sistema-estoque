@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produto;
+use App\Models\Categoria; // <-- 1. Importar a model de Categoria
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -17,9 +18,12 @@ class ProdutoController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $produtos = Produto::query();
+            $produtos = Produto::with('categoria'); // <-- Otimizado com eager loading
 
             return DataTables::of($produtos)
+                ->addColumn('categoria_nome', function ($row) {
+                    return $row->categoria ? $row->categoria->nome : '-';
+                })
                 ->addColumn('preco_custo_formatted', function ($row) {
                     return 'R$ ' . number_format($row->preco_custo, 2, ',', '.');
                 })
@@ -51,7 +55,8 @@ class ProdutoController extends Controller
                 ->make(true);
         }
 
-        return view('produtos.index');
+        $categorias = Categoria::orderBy('nome')->get(); // <-- Envia as categorias para a view
+        return view('produtos.index', compact('categorias'));
     }
 
     public function create()
@@ -61,10 +66,10 @@ class ProdutoController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        // 1. Validação de formulário
         $validator = Validator::make($request->all(), [
             'sku'                => 'required|string|max:50|unique:produtos,sku',
             'nome'               => 'required|string|max:255',
+            'categoria_id'       => 'required|exists:categorias,id', // <-- Validação da categoria
             'preco_custo'        => 'required|string',
             'preco_venda'        => 'required|string',
             'quantidade_estoque' => 'required|integer|min:0',
@@ -78,7 +83,6 @@ class ProdutoController extends Controller
             ], 422);
         }
 
-        // 2. Execução com tratamento de exceções
         try {
             $data = $validator->validated();
             $data['preco_custo'] = $this->converterPrecoParaFloat($data['preco_custo']);
@@ -112,10 +116,10 @@ class ProdutoController extends Controller
 
     public function update(Request $request, $id): JsonResponse
     {
-        // 1. Validação de formulário com Rule::unique ignorando o ID atual
         $validator = Validator::make($request->all(), [
             'sku'                => ['required', 'string', 'max:50', Rule::unique('produtos', 'sku')->ignore($id)],
             'nome'               => 'required|string|max:255',
+            'categoria_id'       => 'required|exists:categorias,id', // <-- Validação da categoria
             'preco_custo'        => 'required|string',
             'preco_venda'        => 'required|string',
             'quantidade_estoque' => 'required|integer|min:0',
@@ -129,7 +133,6 @@ class ProdutoController extends Controller
             ], 422);
         }
 
-        // 2. Execução com tratamento de exceções
         try {
             $produto = Produto::findOrFail($id);
 
@@ -185,9 +188,6 @@ class ProdutoController extends Controller
         }
     }
 
-    /**
-     * Auxiliar para converter "1.500,00" para "1500.00"
-     */
     private function converterPrecoParaFloat($valor): float
     {
         if (is_numeric($valor)) {

@@ -21,6 +21,7 @@ $(document).ready(function() {
         columns: [
             { data: 'sku', name: 'sku' },
             { data: 'nome', name: 'nome' },
+            { data: 'categoria_nome', name: 'categoria.nome' }, // <-- Coluna da Categoria adicionada aqui
             { data: 'preco_custo_formatted', name: 'preco_custo' },
             { data: 'preco_venda_formatted', name: 'preco_venda' },
             { data: 'estoque_badge', name: 'quantidade_estoque' },
@@ -53,6 +54,7 @@ $(document).ready(function() {
             $('#produto_id').val(data.id);
             $('#sku').val(data.sku);
             $('#nome').val(data.nome);
+            $('#categoria_id').val(data.categoria_id); // <-- Seta a categoria selecionada no modal
             
             $('#preco_custo').val(parseFloat(data.preco_custo).toLocaleString('pt-BR', { minimumFractionDigits: 2 }));
             $('#preco_venda').val(parseFloat(data.preco_venda).toLocaleString('pt-BR', { minimumFractionDigits: 2 }));
@@ -81,11 +83,9 @@ $(document).ready(function() {
         $('#alertErros').addClass('d-none');
         $('#listaErros').empty();
         
-        // Captura o botão diretamente dentro do form
         const $btn = $(this).find('button[type="submit"]');
         const textoOriginal = $btn.text();
         
-        // Desativa e altera o texto
         $btn.prop('disabled', true).text('Salvando...');
 
         $.ajax({
