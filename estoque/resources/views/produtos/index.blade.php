@@ -101,8 +101,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-laravel" id="btnSalvar">Salvar Produto</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-laravel btn-sm" id="btnSalvar">Salvar Produto</button>
                 </div>
             </form>
         </div>
@@ -125,5 +125,5 @@
 
     <!-- Chamando o arquivo JS externo -->
     <script src="{{ asset('js/datatables-defaults.js') }}"></script>
-    <script src="{{ asset('js/produtos.js') }}"></script>
+    <script src="{{ asset('js/produtos.js') }}?v={{ time() }}"></script>
 @endpush

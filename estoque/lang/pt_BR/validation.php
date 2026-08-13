@@ -36,6 +36,13 @@ return [
         'descricao'          => 'Descrição',
         'ativo'              => 'Status Ativo',
 
+        // Clientes
+        'nome'              => 'Nome',
+        'email'              => 'E-mail',
+        'telefone'           => 'Telefone',
+        'cpf_cnpj'              => 'CPF/CNPJ',
+        'endereco'              => 'Endereço',
+
         // Fornecedores
         'razao_social'       => 'Razão Social',
         'nome_fantasia'      => 'Nome Fantasia',

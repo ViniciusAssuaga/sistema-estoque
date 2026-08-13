@@ -51,24 +51,24 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-start">
-                    <div id="alertErros" class="alert alert-danger d-none bg-dark text-danger border-danger">
-                        <ul id="listaErros" class="mb-0"></ul>
+                    <div id="alertErros" class="alert alert-danger d-none">
+                        <ul class="mb-0" id="listaErros"></ul>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-secondary">Nome</label>
+                        <label class="form-label fw-semibold">Nome <span class="text-laravel">*</span></label></label>
                         <input type="text" name="nome" id="nome" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-secondary">E-mail</label>
+                        <label class="form-label fw-semibold">E-mail <span class="text-laravel">*</span></label></label>
                         <input type="email" name="email" id="email" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-secondary">Telefone</label>
+                        <label class="form-label fw-semibold">Telefone</label>
                         <input type="text" name="telefone" id="telefone" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-secondary">CPF/CNPJ</label>
+                        <label class="form-label fw-semibold">CPF/CNPJ</label>
                         <input type="text" name="cpf_cnpj" id="cpf_cnpj" class="form-control">
                     </div>
                 </div>

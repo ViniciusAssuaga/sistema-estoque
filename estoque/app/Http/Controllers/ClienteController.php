@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Cliente;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
+use Exception;
 
 class ClienteController extends Controller
 {
@@ -31,43 +36,140 @@ class ClienteController extends Controller
         return view('clientes.index');
     }
 
+    /**
+     * Edit - Buscar dados para preencher o modal
+     */
+    public function edit($id)
+    {
+        try {
+            $cliente = Cliente::findOrFail($id);
+            return response()->json($cliente);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Cliente não encontrado para edição.'
+            ], 404);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Erro ao buscar os dados do cliente.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Store - Cadastrar novo cliente
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'nome' => 'required|string|max:255',
-            'email' => 'required|email|unique:clientes,email',
+        // 1. Validação de formulário
+        $validator = Validator::make($request->all(), [
+            'nome'     => 'required|string|max:255',
+            'email'    => 'required|email|max:255|unique:clientes,email',
             'telefone' => 'nullable|string|max:20',
             'cpf_cnpj' => 'nullable|string|max:20|unique:clientes,cpf_cnpj',
         ]);
 
-        Cliente::create($request->all());
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
-        return response()->json(['message' => 'Cliente cadastrado com sucesso!']);
+        // 2. Execução com tratamento de exceções
+        try {
+            $cliente = Cliente::create($request->all());
+
+            return response()->json([
+                'message' => 'Cliente cadastrado com sucesso!',
+                'data'    => $cliente
+            ], 201);
+
+        } catch (QueryException $e) {
+            return response()->json([
+                'message' => 'Erro ao salvar no banco de dados. Verifique a integridade dos dados.'
+            ], 400);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Ocorreu um erro interno ao processar o cadastro.'
+            ], 500);
+        }
     }
 
-    public function edit(Cliente $cliente)
+    /**
+     * Update - Atualizar cliente existente
+     */
+    public function update(Request $request, $id)
     {
-        return response()->json($cliente);
-    }
-
-    public function update(Request $request, Cliente $cliente)
-    {
-        $request->validate([
-            'nome' => 'required|string|max:255',
-            'email' => 'required|email|unique:clientes,email,' . $cliente->id,
+        // 1. Validação de formulário
+        $validator = Validator::make($request->all(), [
+            'nome'     => 'required|string|max:255',
+            'email'    => ['required', 'email', 'max:255', Rule::unique('clientes', 'email')->ignore($id)],
             'telefone' => 'nullable|string|max:20',
-            'cpf_cnpj' => 'nullable|string|max:20|unique:clientes,cpf_cnpj,' . $cliente->id,
+            'cpf_cnpj' => ['nullable', 'string', 'max:20', Rule::unique('clientes', 'cpf_cnpj')->ignore($id)],
         ]);
 
-        $cliente->update($request->all());
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
-        return response()->json(['message' => 'Cliente atualizado com sucesso!']);
+        // 2. Execução com tratamento de exceções
+        try {
+            $cliente = Cliente::findOrFail($id);
+            $cliente->update($request->all());
+
+            return response()->json([
+                'message' => 'Cliente atualizado com sucesso!'
+            ]);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Cliente não encontrado para atualização.'
+            ], 404);
+
+        } catch (QueryException $e) {
+            return response()->json([
+                'message' => 'Erro ao atualizar no banco de dados.'
+            ], 400);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Ocorreu um erro interno ao processar a requisição.'
+            ], 500);
+        }
     }
 
-    public function destroy(Cliente $cliente)
+    /**
+     * Destroy - Remover cliente
+     */
+    public function destroy($id)
     {
-        $cliente->delete();
+        try {
+            $cliente = Cliente::findOrFail($id);
+            $cliente->delete();
 
-        return response()->json(['message' => 'Cliente excluído com sucesso!']);
+            return response()->json([
+                'message' => 'Cliente excluído com sucesso!'
+            ]);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Cliente não encontrado para exclusão.'
+            ], 404);
+
+        } catch (QueryException $e) {
+            // Trata o erro de Foreign Key (ex: cliente vinculado a vendas)
+            return response()->json([
+                'message' => 'Não é possível excluir este cliente pois ele possui registros vinculados.'
+            ], 400);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Ocorreu um erro ao tentar excluir o cliente.'
+            ], 500);
+        }
     }
 }

@@ -52,28 +52,28 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-start">
-                    <div id="alertErros" class="alert alert-danger d-none bg-dark text-danger border-danger">
-                        <ul id="listaErros" class="mb-0"></ul>
+                    <div id="alertErros" class="alert alert-danger d-none">
+                        <ul class="mb-0" id="listaErros"></ul>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-secondary">Razão Social</label>
+                        <label class="form-label fw-semibold">Razão Social <span class="text-laravel">*</span></label>
                         <input type="text" name="razao_social" id="razao_social" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-secondary">Nome Fantasia</label>
+                        <label class="form-label fw-semibold">Nome Fantasia</label>
                         <input type="text" name="nome_fantasia" id="nome_fantasia" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-secondary">CNPJ</label>
+                        <label class="form-label fw-semibold">CNPJ <span class="text-laravel">*</span></label>
                         <input type="text" name="cnpj" id="cnpj" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-secondary">E-mail</label>
+                        <label class="form-label fw-semibold">E-mail</label>
                         <input type="email" name="email" id="email" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-secondary">Telefone</label>
+                        <label class="form-label fw-semibold">Telefone</label>
                         <input type="text" name="telefone" id="telefone" class="form-control">
                     </div>
                 </div>

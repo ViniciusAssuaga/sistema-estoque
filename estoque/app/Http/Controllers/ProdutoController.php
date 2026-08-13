@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produto;
-use App\Http\Requests\StoreProdutoRequest;
-use App\Http\Requests\UpdateProdutoRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
+use Exception;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProdutoController extends Controller
@@ -17,7 +20,6 @@ class ProdutoController extends Controller
             $produtos = Produto::query();
 
             return DataTables::of($produtos)
-                // Usando addColumn pois são colunas virtuais/formatadas
                 ->addColumn('preco_custo_formatted', function ($row) {
                     return 'R$ ' . number_format($row->preco_custo, 2, ',', '.');
                 })
@@ -57,22 +59,50 @@ class ProdutoController extends Controller
         return redirect()->route('produtos.index');
     }
 
-    public function store(StoreProdutoRequest $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
-        $validated = $request->validated();
+        // 1. Validação de formulário
+        $validator = Validator::make($request->all(), [
+            'sku'                => 'required|string|max:50|unique:produtos,sku',
+            'nome'               => 'required|string|max:255',
+            'preco_custo'        => 'required|string',
+            'preco_venda'        => 'required|string',
+            'quantidade_estoque' => 'required|integer|min:0',
+            'estoque_minimo'     => 'nullable|integer|min:0',
+            'descricao'          => 'nullable|string',
+        ]);
 
-        // Converte os preços de "1.250,50" para "1250.50" (float válido para o banco)
-        $validated['preco_custo'] = $this->converterPrecoParaFloat($validated['preco_custo']);
-        $validated['preco_venda'] = $this->converterPrecoParaFloat($validated['preco_venda']);
-        $validated['ativo'] = $request->has('ativo');
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
-        $produto = Produto::create($validated);
+        // 2. Execução com tratamento de exceções
+        try {
+            $data = $validator->validated();
+            $data['preco_custo'] = $this->converterPrecoParaFloat($data['preco_custo']);
+            $data['preco_venda'] = $this->converterPrecoParaFloat($data['preco_venda']);
+            $data['ativo']       = $request->has('ativo');
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Produto cadastrado com sucesso!',
-            'data' => $produto
-        ], 201);
+            $produto = Produto::create($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Produto cadastrado com sucesso!',
+                'data'    => $produto
+            ], 201);
+
+        } catch (QueryException $e) {
+            return response()->json([
+                'message' => 'Erro ao salvar no banco de dados. Verifique os dados enviados.'
+            ], 400);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Ocorreu um erro interno ao processar o cadastro do produto.'
+            ], 500);
+        }
     }
 
     public function edit(Produto $produto): JsonResponse
@@ -80,31 +110,79 @@ class ProdutoController extends Controller
         return response()->json($produto);
     }
 
-    public function update(UpdateProdutoRequest $request, Produto $produto): JsonResponse
+    public function update(Request $request, $id): JsonResponse
     {
-        $validated = $request->validated();
-
-        // Converte os preços de "1.250,50" para "1250.50" (float válido para o banco)
-        $validated['preco_custo'] = $this->converterPrecoParaFloat($validated['preco_custo']);
-        $validated['preco_venda'] = $this->converterPrecoParaFloat($validated['preco_venda']);
-        $validated['ativo'] = $request->has('ativo');
-
-        $produto->update($validated);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Produto atualizado com sucesso!'
+        // 1. Validação de formulário com Rule::unique ignorando o ID atual
+        $validator = Validator::make($request->all(), [
+            'sku'                => ['required', 'string', 'max:50', Rule::unique('produtos', 'sku')->ignore($id)],
+            'nome'               => 'required|string|max:255',
+            'preco_custo'        => 'required|string',
+            'preco_venda'        => 'required|string',
+            'quantidade_estoque' => 'required|integer|min:0',
+            'estoque_minimo'     => 'nullable|integer|min:0',
+            'descricao'          => 'nullable|string',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // 2. Execução com tratamento de exceções
+        try {
+            $produto = Produto::findOrFail($id);
+
+            $data = $validator->validated();
+            $data['preco_custo'] = $this->converterPrecoParaFloat($data['preco_custo']);
+            $data['preco_venda'] = $this->converterPrecoParaFloat($data['preco_venda']);
+            $data['ativo']       = $request->has('ativo');
+
+            $produto->update($data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Produto atualizado com sucesso!'
+            ]);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Produto não encontrado para atualização.'
+            ], 404);
+
+        } catch (QueryException $e) {
+            return response()->json([
+                'message' => 'Erro ao atualizar no banco de dados.'
+            ], 400);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Ocorreu um erro interno ao processar a alteração do produto.'
+            ], 500);
+        }
     }
 
-    public function destroy(Produto $produto): JsonResponse
+    public function destroy($id): JsonResponse
     {
-        $produto->delete();
+        try {
+            $produto = Produto::findOrFail($id);
+            $produto->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Produto removido com sucesso!'
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Produto removido com sucesso!'
+            ]);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Produto não encontrado para exclusão.'
+            ], 404);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Não foi possível excluir o produto.'
+            ], 500);
+        }
     }
 
     /**

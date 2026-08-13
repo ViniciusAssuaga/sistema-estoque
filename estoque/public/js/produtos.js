@@ -81,8 +81,12 @@ $(document).ready(function() {
         $('#alertErros').addClass('d-none');
         $('#listaErros').empty();
         
-        const $btn = $('#btnSalvar');
+        // Captura o botão diretamente dentro do form
+        const $btn = $(this).find('button[type="submit"]');
         const textoOriginal = $btn.text();
+        
+        // Desativa e altera o texto
+        $btn.prop('disabled', true).text('Salvando...');
 
         $.ajax({
             url: url,
