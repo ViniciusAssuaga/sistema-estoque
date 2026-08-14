@@ -126,11 +126,11 @@
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     
-    <!-- Passando rotas e opções de categorias do Laravel para o JS externo -->
+    <!-- Rotas relativas sem esquema (iniciadas com /) evitam Mixed Content no HTTPS -->
     <script>
         window.routes = {
-            produtosIndex: "{{ route('produtos.index') }}",
-            produtosStore: "{{ route('produtos.store') }}"
+            produtosIndex: '/produtos',
+            produtosStore: '/produtos'
         };
 
         window.categoriasOptions = `
@@ -140,7 +140,7 @@
         `;
     </script>
 
-    <!-- Chamando o arquivo JS externo -->
-    <script src="{{ asset('js/datatables-defaults.js') }}"></script>
-    <script src="{{ asset('js/produtos.js') }}?v={{ time() }}"></script>
+    <!-- Carregamento relativo de scripts JS -->
+    <script src="/js/datatables-defaults.js"></script>
+    <script src="/js/produtos.js?v={{ time() }}"></script>
 @endpush

@@ -97,6 +97,7 @@
             fornecedoresStore: "/api/fornecedores"
         };
     </script>
-    <script src="{{ asset('js/datatables-defaults.js') }}"></script>
-    <script src="{{ asset('js/fornecedores.js') }}"></script>
+    <!-- Substituídos os assets com URL absoluta por caminhos relativos -->
+    <script src="/js/datatables-defaults.js"></script>
+    <script src="/js/fornecedores.js"></script>
 @endpush

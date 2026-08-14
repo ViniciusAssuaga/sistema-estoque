@@ -104,6 +104,7 @@
             produtosIndex: "/api/produtos"
         };
     </script>
-    <script src="{{ asset('js/datatables-defaults.js') }}"></script>
-    <script src="{{ asset('js/movimentacoes.js') }}?v={{ time() }}"></script>
+    <!-- Substituídos os assets com URL absoluta por caminhos relativos -->
+    <script src="/js/datatables-defaults.js"></script>
+    <script src="/js/movimentacoes.js?v={{ time() }}"></script>
 @endpush

@@ -86,12 +86,13 @@
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     
+    <!-- Rotas relativas sem esquema (iniciadas com /) evitam Mixed Content no HTTPS -->
     <script>
         window.routes = {
-            clientesIndex: "{{ route('clientes.index') }}",
-            clientesStore: "{{ route('clientes.store') }}"
+            clientesIndex: '/clientes',
+            clientesStore: '/clientes'
         };
     </script>
-    <script src="{{ asset('js/datatables-defaults.js') }}"></script>
-    <script src="{{ asset('js/clientes.js') }}"></script>
+    <script src="/js/datatables-defaults.js"></script>
+    <script src="/js/clientes.js"></script>
 @endpush
