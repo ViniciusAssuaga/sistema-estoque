@@ -1,6 +1,6 @@
 FROM php:8.3-apache
 
-# 1. Instala pacotes do sistema
+# 1. Instala pacotes do sistema e Node.js/NPM
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
@@ -9,9 +9,11 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     git \
-    curl
+    curl \
+    nodejs \
+    npm
 
-# 2. Instala extensões PHP essenciais do Laravel (incluindo pdo_pgsql)
+# 2. Instala extensões PHP essenciais do Laravel
 RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring bcmath gd
 
 # 3. Ativa o mod_rewrite do Apache
@@ -29,10 +31,13 @@ COPY . /var/www/html/
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
-# 7. Permissões de escrita do Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# 7. Compila os arquivos do Vite (CSS e JS)
+RUN npm install && npm run build
+
+# 8. Permissões de escrita do Laravel
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public
 
 EXPOSE 80
 
-# 8. Executa as migrations do banco e em seguida inicia o Apache
+# 9. Executa as migrations do banco e inicia o Apache
 CMD php artisan migrate --force && apache2-foreground
