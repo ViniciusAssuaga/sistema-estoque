@@ -60,13 +60,13 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{{ route('movimentacoes.index') }}" class="nav-link {{ request()->routeIs('movimentacoes*') ? 'active' : '' }}">
                     <i class="bi bi-arrow-left-right"></i>
                     <span>Movimentações</span>
                 </a>
             </li>
             <li class="nav-item mt-auto">
-                <a href="#" class="nav-link text-danger">
+                <a href="https://www.google.com" class="nav-link text-danger">
                     <i class="bi bi-box-arrow-left"></i>
                     <span>Sair</span>
                 </a>

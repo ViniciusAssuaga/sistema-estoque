@@ -19,7 +19,7 @@ window.getDataTableDefaults = function(customOptions = {}) {
             infoFiltered: "(Filtrados de _MAX_ registros no total)",
             loadingRecords: "Carregando...",
             zeroRecords: "Nenhum registro encontrado",
-            emptyTable: "Nenhum dado disponível na tabela",
+            emptyTable: "Nenhum registro encontrado",
             paginate: {
                 first: "Primeiro",
                 previous: "Anterior",
