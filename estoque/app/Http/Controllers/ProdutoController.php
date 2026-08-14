@@ -72,11 +72,11 @@ class ProdutoController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'sku'                => 'required|string|max:50|unique:produtos,sku',
-            'nome'               => 'required|string|max:255',
-            'categoria_id'       => 'required|exists:categorias,id', // <-- Validação da categoria
-            'preco_custo'        => 'required|string',
-            'preco_venda'        => 'required|string',
+            'sku'                  => 'required|string|max:50|unique:produtos,sku',
+            'nome'                 => 'required|string|max:255',
+            'categoria_id'         => 'required|exists:categorias,id', // <-- Validação da categoria
+            'preco_custo'          => 'required|string',
+            'preco_venda'          => 'required|string',
             'quantidade_estoque' => 'required|integer|min:0',
             'estoque_minimo'     => 'nullable|integer|min:0',
             'descricao'          => 'nullable|string',
@@ -122,11 +122,11 @@ class ProdutoController extends Controller
     public function update(Request $request, $id): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'sku'                => ['required', 'string', 'max:50', Rule::unique('produtos', 'sku')->ignore($id)],
-            'nome'               => 'required|string|max:255',
-            'categoria_id'       => 'required|exists:categorias,id', // <-- Validação da categoria
-            'preco_custo'        => 'required|string',
-            'preco_venda'        => 'required|string',
+            'sku'                  => ['required', 'string', 'max:50', Rule::unique('produtos', 'sku')->ignore($id)],
+            'nome'                 => 'required|string|max:255',
+            'categoria_id'         => 'required|exists:categorias,id', // <-- Validação da categoria
+            'preco_custo'          => 'required|string',
+            'preco_venda'          => 'required|string',
             'quantidade_estoque' => 'required|integer|min:0',
             'estoque_minimo'     => 'nullable|integer|min:0',
             'descricao'          => 'nullable|string',

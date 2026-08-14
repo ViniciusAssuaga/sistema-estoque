@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('dashboard');
-})->name('dashboard');
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index']);
 
 // Módulos que utilizam API REST (apenas carregam a view)
 Route::get('/fornecedores', function () { return view('fornecedores.index'); })->name('fornecedores.index');

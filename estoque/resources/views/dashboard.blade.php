@@ -13,7 +13,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 fw-bold mb-0 text-white">Visão Geral do <span class="text-laravel">Estoque</span></h1>
-            <small class="text-secondary">Bem-vindo de volta, Administrador. Aqui está o resumo atual do sistema.</small>
+            <small class="text-secondary">Bem-vindo, Administrador. Aqui está o resumo atual do sistema.</small>
         </div>
     </div>
 
@@ -24,8 +24,8 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <span class="text-secondary small fw-semibold text-uppercase">Total de Produtos</span>
-                        <h2 class="h3 fw-bold text-white mb-0 mt-1">1,248</h2>
-                        <small class="text-success"><i class="bi bi-arrow-up"></i> +12% este mês</small>
+                        <h2 class="h3 fw-bold text-white mb-0 mt-1">{{ number_format($totalProdutos, 0, ',', '.') }}</h2>
+                        <small class="text-success"><i class="bi bi-arrow-up"></i> Cadastrados no sistema</small>
                     </div>
                     <div class="stat-icon" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background-color: rgba(214, 51, 39, 0.15); color: var(--laravel-red); border-radius: 8px; font-size: 1.5rem;">
                         <i class="bi bi-boxes"></i>
@@ -39,8 +39,8 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <span class="text-secondary small fw-semibold text-uppercase">Valor em Estoque</span>
-                        <h2 class="h3 fw-bold text-white mb-0 mt-1">R$ 148.230</h2>
-                        <small class="text-success"><i class="bi bi-arrow-up"></i> +4.5% vs. ontem</small>
+                        <h2 class="h3 fw-bold text-white mb-0 mt-1">R$ {{ number_format($valorTotalEstoque, 2, ',', '.') }}</h2>
+                        <small class="text-success"><i class="bi bi-shield-check"></i> Custo total atual</small>
                     </div>
                     <div class="stat-icon" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background-color: rgba(214, 51, 39, 0.15); color: var(--laravel-red); border-radius: 8px; font-size: 1.5rem;">
                         <i class="bi bi-currency-dollar"></i>
@@ -54,7 +54,7 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <span class="text-secondary small fw-semibold text-uppercase">Estoque Baixo</span>
-                        <h2 class="h3 fw-bold text-warning mb-0 mt-1">14</h2>
+                        <h2 class="h3 fw-bold text-warning mb-0 mt-1">{{ $totalEstoqueBaixo }}</h2>
                         <small class="text-warning">Requer atenção</small>
                     </div>
                     <div class="stat-icon" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background-color: rgba(255, 193, 7, 0.15); color: #ffc107; border-radius: 8px; font-size: 1.5rem;">
@@ -69,7 +69,7 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <span class="text-secondary small fw-semibold text-uppercase">Movimentações Hoje</span>
-                        <h2 class="h3 fw-bold text-info mb-0 mt-1">38</h2>
+                        <h2 class="h3 fw-bold text-info mb-0 mt-1">{{ $movimentacoesHoje }}</h2>
                         <small class="text-info">Entradas e saídas</small>
                     </div>
                     <div class="stat-icon" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background-color: rgba(13, 202, 240, 0.15); color: #0dcaf0; border-radius: 8px; font-size: 1.5rem;">
@@ -114,7 +114,7 @@
             <div class="card shadow-sm">
                 <div class="card-header bg-transparent border-bottom border-dark py-3 d-flex justify-content-between align-items-center">
                     <h5 class="card-title fw-bold mb-0 text-white"><i class="bi bi-clock-history text-laravel me-2"></i> Últimas Movimentações</h5>
-                    <a href="#" class="small text-laravel text-decoration-none fw-semibold">Ver todas</a>
+                    <a href="{{ route('movimentacoes.index') }}" class="small text-laravel text-decoration-none fw-semibold">Ver todas</a>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -128,30 +128,26 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><span class="fw-semibold text-white">Cadeira Ergonômica Executiva</span></td>
-                                    <td><span class="badge bg-success text-white">Entrada</span></td>
-                                    <td class="text-success fw-bold">+15</td>
-                                    <td class="text-secondary small">Hoje, 10:42</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="fw-semibold text-white">Mouse Gamer RGB Wireless</span></td>
-                                    <td><span class="badge bg-danger text-white">Saída</span></td>
-                                    <td class="text-danger fw-bold">-4</td>
-                                    <td class="text-secondary small">Hoje, 09:15</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="fw-semibold text-white">Teclado Mecânico Switch Red</span></td>
-                                    <td><span class="badge bg-danger text-white">Saída</span></td>
-                                    <td class="text-danger fw-bold">-2</td>
-                                    <td class="text-secondary small">Ontem, 16:30</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="fw-semibold text-white">Monitor Ultrawide 29" IPS</span></td>
-                                    <td><span class="badge bg-success text-white">Entrada</span></td>
-                                    <td class="text-success fw-bold">+10</td>
-                                    <td class="text-secondary small">Ontem, 14:10</td>
-                                </tr>
+                                @forelse($ultimasMovimentacoes as $mov)
+                                    <tr>
+                                        <td><span class="fw-semibold text-white">{{ $mov->produto->nome ?? 'Produto Removido' }}</span></td>
+                                        <td>
+                                            @if($mov->tipo === 'entrada')
+                                                <span class="badge bg-success text-white">Entrada</span>
+                                            @else
+                                                <span class="badge bg-danger text-white">Saída</span>
+                                            @endif
+                                        </td>
+                                        <td class="{{ $mov->tipo === 'entrada' ? 'text-success' : 'text-danger' }} fw-bold">
+                                            {{ $mov->tipo === 'entrada' ? '+' : '-' }}{{ $mov->quantidade }}
+                                        </td>
+                                        <td class="text-secondary small">{{ $mov->created_at->format('d/m/Y H:i') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center text-secondary py-3">Nenhuma movimentação registrada.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -176,30 +172,20 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><span class="fw-semibold text-white">Headset Gamer 7.1</span></td>
-                                    <td><span class="text-danger fw-bold">1</span></td>
-                                    <td>5</td>
-                                    <td class="text-end">
-                                        <a href="#" class="btn btn-sm btn-outline-danger py-0 px-2">Repor</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><span class="fw-semibold text-white">Cabo HDMI 2.0 4K 2m</span></td>
-                                    <td><span class="text-danger fw-bold">2</span></td>
-                                    <td>10</td>
-                                    <td class="text-end">
-                                        <a href="#" class="btn btn-sm btn-outline-danger py-0 px-2">Repor</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><span class="fw-semibold text-white">Webcam Full HD 1080p</span></td>
-                                    <td><span class="text-warning fw-bold">3</span></td>
-                                    <td>5</td>
-                                    <td class="text-end">
-                                        <a href="#" class="btn btn-sm btn-outline-warning py-0 px-2">Repor</a>
-                                    </td>
-                                </tr>
+                                @forelse($produtosEstoqueBaixo as $prod)
+                                    <tr>
+                                        <td><span class="fw-semibold text-white">{{ $prod->nome }}</span></td>
+                                        <td><span class="text-danger fw-bold">{{ $prod->quantidade_estoque }}</span></td>
+                                        <td>{{ $prod->estoque_minimo }}</td>
+                                        <td class="text-end">
+                                            <a href="{{ route('produtos.index') }}?q={{ urlencode($prod->nome) }}" class="btn btn-sm btn-outline-warning py-0 px-2">Repor</a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center text-secondary py-3">Nenhum produto com estoque crítico.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -213,14 +199,15 @@
 @push('scripts')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        // Gráfico de Movimentações (Últimos 7 Dias dinâmico via backend)
         const ctxMov = document.getElementById('graficoMovimentacoes').getContext('2d');
         new Chart(ctxMov, {
             type: 'line',
             data: {
-                labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                labels: @json($diasLabels),
                 datasets: [{
                     label: 'Entradas',
-                    data: [12, 19, 8, 15, 22, 10, 14],
+                    data: @json($dadosEntradas),
                     borderColor: '#198754',
                     backgroundColor: 'rgba(25, 135, 84, 0.1)',
                     borderWidth: 2,
@@ -228,7 +215,7 @@
                     fill: true
                 }, {
                     label: 'Saídas',
-                    data: [8, 12, 15, 9, 18, 6, 11],
+                    data: @json($dadosSaidas),
                     borderColor: '#D63327',
                     backgroundColor: 'rgba(214, 51, 39, 0.1)',
                     borderWidth: 2,
@@ -257,14 +244,15 @@
             }
         });
 
+        // Gráfico de Categorias Populares dinâmico via backend
         const ctxCat = document.getElementById('graficoCategorias').getContext('2d');
         new Chart(ctxCat, {
             type: 'doughnut',
             data: {
-                labels: ['Periféricos', 'Hardware', 'Monitores', 'Acessórios'],
+                labels: @json($categoriasLabels),
                 datasets: [{
-                    data: [45, 25, 20, 10],
-                    backgroundColor: ['#D63327', '#fd7e14', '#ffc107', '#0dcaf0'],
+                    data: @json($categoriasTotais),
+                    backgroundColor: ['#D63327', '#fd7e14', '#ffc107', '#0dcaf0', '#6610f2', '#20c997'],
                     borderWidth: 0
                 }]
             },

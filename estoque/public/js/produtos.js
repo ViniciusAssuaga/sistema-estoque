@@ -1,4 +1,8 @@
 $(document).ready(function() {
+    // Captura o parâmetro 'q' da URL, se existir (para filtragem via Dashboard)
+    const urlParams = new URLSearchParams(window.location.search);
+    const termoBusca = urlParams.get('q') || '';
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -17,10 +21,13 @@ $(document).ready(function() {
     }
 
     const tabela = $('#tabela-produtos').DataTable(window.getDataTableDefaults({
+        search: {
+            search: termoBusca // Injeta o termo vindo da URL na busca do DataTables
+        },
         ajax: {
             url: window.routes.produtosIndex,
             data: function (d) {
-                d.categoria_id = $('#filtro_categoria').val(); // Envia o ID da categoria selecionada para o servidor
+                d.categoria_id = $('#filtro_categoria').val();
             }
         },
         columns: [
@@ -46,6 +53,11 @@ $(document).ready(function() {
             `;
             
             $('#tabela-produtos_wrapper .dataTables_length').addClass('d-flex align-items-center').append(selectHtml);
+            
+            // Limpa o parâmetro da URL após carregar para manter a interface limpa
+            if (termoBusca) {
+                window.history.replaceState(null, null, window.location.pathname);
+            }
         }
     }));
 
