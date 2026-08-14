@@ -1,12 +1,12 @@
 FROM php:8.2-apache
 
-# Copia os arquivos da pasta estoque para o servidor web do Apache
-COPY . /var/www/html/
-
-# Habilita suporte a Banco de Dados MySQL no PHP
+# Habilita suporte ao MySQL
 RUN docker-php-ext-install pdo pdo_mysql
 
-# Dá permissão para o Apache ler os arquivos
+# Copia todo o conteúdo de 'estoque' para a pasta raiz do Apache
+COPY ./estoque /var/www/html/
+
+# Permissões
 RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
