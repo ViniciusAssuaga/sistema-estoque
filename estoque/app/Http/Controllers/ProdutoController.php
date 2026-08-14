@@ -204,4 +204,11 @@ class ProdutoController extends Controller
 
         return (float) $valorLimpo;
     }
+
+    public function listarJson()
+    {
+        // Retorna apenas os campos necessários para o autocomplete
+        $produtos = Produto::select('id', 'nome', 'quantidade_estoque')->get();
+        return response()->json($produtos);
+    }
 }

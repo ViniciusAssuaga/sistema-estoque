@@ -14,12 +14,30 @@ $(document).ready(function() {
             dataSrc: '' // Informa que o JSON retornado é um array direto
         },
         columns: [
-            { data: 'id', name: 'id', render: (data) => `#${data}` },
+            { 
+                data: 'id', 
+                name: 'id', 
+                type: 'num',
+                render: function(data, type, row) {
+                    if (type === 'sort' || type === 'type') {
+                        return data;
+                    }
+                    return `#${data}`;
+                } 
+            },
             { 
                 data: 'created_at',
                 name: 'created_at',
-                render: function(data) {
+                render: function(data, type, row) {
                     if (!data) return '-';
+
+                    // Se for para ordenação, retorna a string pura do banco (formato ISO YYYY-MM-DD HH:mm:ss) 
+                    // que ordena cronologicamente de forma perfeita em texto numérico/alfanumérico.
+                    if (type === 'sort' || type === 'type') {
+                        return data;
+                    }
+
+                    // Para exibição, formata no padrão brasileiro
                     const dataObj = new Date(data);
                     return dataObj.toLocaleString('pt-BR', {
                         day: '2-digit',
@@ -28,7 +46,7 @@ $(document).ready(function() {
                         hour: '2-digit',
                         minute: '2-digit',
                         second: '2-digit',
-                        timeZone: 'UTC' // Ajusta para exibir o horário correto vindo do banco
+                        timeZone: 'UTC'
                     });
                 }
             },
@@ -48,12 +66,14 @@ $(document).ready(function() {
         order: [[1, 'desc']]
     }));
 
-    // Cache de produtos para evitar requisições excessivas (opcional, se a lista for muito grande pode buscar direto na API com filtro)
+    // Cache de produtos para evitar requisições excessivas
     let produtosCache = [];
 
     function carregarProdutosCache() {
-        $.get(window.routes.produtosIndex, function(data) {
+        $.get(window.routes.produtosListarJson, function(data) {
             produtosCache = data;
+        }).fail(function() {
+            console.error('Erro ao carregar produtos do servidor (Server-Side)');
         });
     }
 
@@ -67,7 +87,7 @@ $(document).ready(function() {
         $('#alertErros').addClass('d-none');
         $('#listaErros').empty();
         $('#lista-sugestoes').hide();
-        carregarProdutosCache(); // Atualiza o cache se necessário
+        carregarProdutosCache(); 
         $('#modalMovimentacao').modal('show');
     });
 
@@ -76,14 +96,12 @@ $(document).ready(function() {
         const termo = $(this).val().toLowerCase();
         const $sugestoes = $('#lista-sugestoes');
         
-        // Se limpou o campo, limpa o ID oculto
         if (termo.trim() === '') {
             $('#produto_id').val('');
             $sugestoes.hide().empty();
             return;
         }
 
-        // Filtra os produtos do cache baseado no termo digitado
         const filtrados = produtosCache.filter(p => p.nome.toLowerCase().includes(termo));
 
         $sugestoes.empty();
@@ -102,19 +120,15 @@ $(document).ready(function() {
         }
     });
 
-    // Selecionar um produto da lista
     $(document).on('click', '.item-produto', function() {
         const id = $(this).data('id');
         const nome = $(this).data('nome');
-
         $('#produto_id').val(id);
         $('#produto_busca').val(nome);
         $('#lista-sugestoes').hide().empty();
     });
 
-    // Se sair do campo sem selecionar (blur), valida se o campo oculto está vazio; se estiver, limpa o texto
     $('#produto_busca').on('blur', function() {
-        // Usamos um setTimeout pequeno para permitir o clique na lista de sugestões antes de sumir
         setTimeout(() => {
             if ($('#produto_id').val() === '') {
                 $(this).val('');
@@ -127,7 +141,6 @@ $(document).ready(function() {
     $('#formMovimentacao').on('submit', function(e) {
         e.preventDefault();
 
-        // Validação extra de segurança caso o usuário tente burlar
         if (!$('#produto_id').val()) {
             Swal.fire({
                 icon: 'warning',
@@ -167,7 +180,6 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 $btn.prop('disabled', false).text(textoOriginal);
-
                 if (xhr.status === 422) {
                     const erros = xhr.responseJSON.errors;
                     $.each(erros, function(key, messages) {

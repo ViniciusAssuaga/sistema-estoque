@@ -101,7 +101,7 @@
         window.routes = {
             movimentacoesIndex: "/api/movimentacoes",
             movimentacoesStore: "/api/movimentacoes",
-            produtosIndex: "/api/produtos"
+            produtosListarJson: "{{ route('produtos.listarJson') }}"
         };
     </script>
     <!-- Substituídos os assets com URL absoluta por caminhos relativos -->
