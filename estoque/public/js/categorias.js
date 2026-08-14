@@ -9,7 +9,8 @@ $(document).ready(function() {
 
     var table = $('#tabela-categorias').DataTable(
         window.getDataTableDefaults({
-            ajax: window.routes.categoriasIndex,
+            // Mudar para URL relativa
+            ajax: '/api/categorias',
             columns: [
                 { data: 'id', name: 'id' },
                 { data: 'nome', name: 'nome' },
@@ -34,7 +35,8 @@ $(document).ready(function() {
         e.preventDefault();
 
         let id = $('#categoria_id').val();
-        let url = id ? `/api/categorias/${id}` : window.routes.categoriasStore;
+        // Mudar para URL relativa no POST
+        let url = id ? `/api/categorias/${id}` : '/api/categorias';
         let method = id ? 'PUT' : 'POST';
 
         let btnSalvar = $('#btnSalvar');
@@ -74,7 +76,8 @@ $(document).ready(function() {
                     swalDark.fire({
                         icon: 'error',
                         title: 'Erro!',
-                        text: xhr.responseJSON.message || 'Ocorreu um erro inesperado.'
+                        // Previne o "Cannot read properties of undefined (reading 'message')" caso dê erro de rede/servidor
+                        text: xhr.responseJSON?.message || 'Ocorreu um erro inesperado.'
                     });
                 }
             },
@@ -124,7 +127,7 @@ $(document).ready(function() {
                         swalDark.fire('Excluído!', response.message, 'success');
                     },
                     error: function(xhr) {
-                        swalDark.fire('Erro!', xhr.responseJSON.message || 'Erro ao excluir.', 'error');
+                        swalDark.fire('Erro!', xhr.responseJSON?.message || 'Erro ao excluir.', 'error');
                     }
                 });
             }
