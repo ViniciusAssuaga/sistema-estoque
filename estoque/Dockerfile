@@ -1,6 +1,6 @@
 FROM php:8.3-apache
 
-# 1. Instala pacotes do sistema e Node.js/NPM
+# 1. Instala dependências do sistema
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     nodejs \
-    npm
+    npm \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # 2. Instala extensões PHP essenciais do Laravel
 RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring bcmath gd
@@ -24,20 +25,29 @@ ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/conf-available/*.conf
 
-# 5. Copia os arquivos para o container
-COPY . /var/www/html/
+# Define o diretório de trabalho
+WORKDIR /var/www/html
 
-# 6. Instala o Composer
+# 5. Instala o Composer (Copiando apenas os arquivos de dependência primeiro para aproveitar o cache)
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-scripts --ignore-platform-reqs
 
-# 7. Compila os arquivos do Vite (CSS e JS)
-RUN npm install && npm run build
+# 6. Instala dependências do Frontend (Aproveita o cache do Node)
+COPY package.json package-lock.json* ./
+RUN npm install
 
-# 8. Permissões de escrita do Laravel
+# 7. Copia o restante do código da aplicação
+COPY . .
+
+# 8. Executa scripts pós-instalação do Composer e compila o Vite
+RUN composer dump-autoload --no-dev --optimize
+RUN npm run build
+
+# 9. Configura permissões corretas para o usuário do Apache (www-data)
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public
 
 EXPOSE 80
 
-# 9. Executa as migrations do banco e inicia o Apache
+# 10. Executa as migrations e inicia o Apache
 CMD php artisan migrate --force --no-interaction && apache2-foreground
