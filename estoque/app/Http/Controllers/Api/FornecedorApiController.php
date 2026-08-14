@@ -55,8 +55,9 @@ class FornecedorApiController extends Controller
     }
 
     // GET /api/fornecedores/{id}/edit
-    public function edit(Fornecedor $fornecedor)
+    public function show($id)
     {
+        $fornecedor = Fornecedor::findOrFail($id);
         return response()->json($fornecedor);
     }
 

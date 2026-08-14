@@ -94,13 +94,16 @@ $(document).ready(function() {
         $('#alertErros').addClass('d-none');
         $('#listaErros').empty();
 
-        $.get(`/api/fornecedores/${id}`, function(data) {
-            $('#fornecedor_id').val(data.id);
-            $('#razao_social').val(data.razao_social);
-            $('#nome_fantasia').val(data.nome_fantasia);
-            $('#cnpj').val(data.cnpj);
-            $('#email').val(data.email);
-            $('#telefone').val(data.telefone);
+        $.get(`/api/fornecedores/${id}`, function(res) {
+            let fornecedor = res.data ? res.data : res;
+
+            // Preenche os campos do modal
+            $('#fornecedor_id').val(fornecedor.id);
+            $('#razao_social').val(fornecedor.razao_social);
+            $('#nome_fantasia').val(fornecedor.nome_fantasia);
+            $('#cnpj').val(fornecedor.cnpj);
+            $('#email').val(fornecedor.email);
+            $('#telefone').val(fornecedor.telefone);
 
             $('#modalTitulo').html('Editar <span class="text-laravel">Fornecedor</span>');
             $('#btnSalvar').text('Atualizar Fornecedor');
