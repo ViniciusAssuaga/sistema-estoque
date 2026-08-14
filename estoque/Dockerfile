@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# 1. Instala dependências do sistema e extensões necessárias do PHP para o Laravel
+# 1. Instala pacotes do sistema
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
@@ -10,24 +10,25 @@ RUN apt-get update && apt-get install -y \
     git \
     curl
 
-RUN docker-php-ext-install pdo pdo_mysql mbstring exts-mbstring bcmath gd
+# 2. Instala extensões PHP essenciais do Laravel
+RUN docker-php-ext-install pdo pdo_mysql mbstring bcmath gd
 
-# 2. Ativa o mod_rewrite do Apache (essencial para as rotas do Laravel funcionarem)
+# 3. Ativa o mod_rewrite do Apache
 RUN a2enmod rewrite
 
-# 3. APONTA O APACHE PARA A PASTA PUBLIC DO LARAVEL
+# 4. Aponta o Apache para a pasta public do Laravel
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/conf-available/*.conf
 
-# 4. Copia os arquivos do Laravel (pasta estoque) para o container
+# 5. Copia os arquivos do projeto para o container
 COPY ./estoque /var/www/html/
 
-# 5. Instala o Composer
+# 6. Instala o Composer e as dependências
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
-# 6. Dá permissão de escrita para as pastas de cache/logs do Laravel
+# 7. Permissões de escrita do Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 80
