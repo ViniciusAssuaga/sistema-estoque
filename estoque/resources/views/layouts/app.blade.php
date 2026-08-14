@@ -15,9 +15,8 @@
     
     @stack('styles')
 
+    <!-- Asset Bundler Oficial do Laravel (Vite) -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ time() }}">
 </head>
 <body>
 
