@@ -31,7 +31,7 @@ WORKDIR /var/www/html
 # 5. Instala o Composer (Copiando apenas os arquivos de dependência primeiro para aproveitar o cache)
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-scripts --ignore-platform-reqs
+RUN composer install --optimize-autoloader --no-scripts --ignore-platform-reqs
 
 # 6. Instala dependências do Frontend (Aproveita o cache do Node)
 COPY package.json package-lock.json* ./
@@ -41,7 +41,7 @@ RUN npm install
 COPY . .
 
 # 8. Executa scripts pós-instalação do Composer e compila o Vite
-RUN composer dump-autoload --no-dev --optimize
+RUN composer dump-autoload --optimize
 RUN npm run build
 
 # 9. Configura permissões corretas para o usuário do Apache (www-data)
