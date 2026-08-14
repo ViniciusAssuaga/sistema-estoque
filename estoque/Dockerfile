@@ -21,8 +21,8 @@ ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/conf-available/*.conf
 
-# 5. Copia os arquivos do projeto para o container
-COPY ./estoque /var/www/html/
+# 5. COPIA OS ARQUIVOS DA PASTA ATUAL PARA O CONTAINER
+COPY . /var/www/html/
 
 # 6. Instala o Composer e as dependências
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
