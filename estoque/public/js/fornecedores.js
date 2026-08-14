@@ -94,7 +94,7 @@ $(document).ready(function() {
         $('#alertErros').addClass('d-none');
         $('#listaErros').empty();
 
-        $.get(`/api/fornecedores/${id}/edit`, function(data) {
+        $.get(`/api/fornecedores/${id}`, function(data) {
             $('#fornecedor_id').val(data.id);
             $('#razao_social').val(data.razao_social);
             $('#nome_fantasia').val(data.nome_fantasia);
