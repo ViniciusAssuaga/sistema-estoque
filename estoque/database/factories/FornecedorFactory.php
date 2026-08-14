@@ -9,11 +9,11 @@ class FornecedorFactory extends Factory
     public function definition(): array
     {
         return [
-            'razao_social' => $this->faker->company(),
-            'nome_fantasia' => $this->faker->companySuffix(),
-            'cnpj' => $this->faker->numerify('##.###.###/0001-##'),
-            'email' => $this->faker->companyEmail(),
-            'telefone' => $this->faker->phoneNumber(),
+            'razao_social' => fake()->company(),
+            'nome_fantasia' => fake()->companySuffix(),
+            'cnpj' => fake()->numerify('##.###.###/0001-##'),
+            'email' => fake()->companyEmail(),
+            'telefone' => fake()->phoneNumber(),
             'ativo' => true,
         ];
     }

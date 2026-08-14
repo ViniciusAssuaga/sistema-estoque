@@ -12,15 +12,15 @@ class MovimentacaoFactory extends Factory
 
     public function definition(): array
     {
-        $tipo = $this->faker->randomElement(['entrada', 'saida']);
-        $quantidade = $this->faker->numberBetween(1, 20);
+        $tipo = fake()->randomElement(['entrada', 'saida']);
+        $quantidade = fake()->numberBetween(1, 20);
 
         return [
             'produto_id' => Produto::inRandomOrder()->first()?->id ?? Produto::factory(),
             'tipo' => $tipo,
             'quantidade' => $quantidade,
-            'observacao' => $this->faker->optional(0.7)->sentence(),
-            'created_at' => $this->faker->dateTimeBetween('-3 months', 'now'),
+            'observacao' => fake()->optional(0.7)->sentence(),
+            'created_at' => fake()->dateTimeBetween('-3 months', 'now'),
             'updated_at' => function (array $attributes) {
                 return $attributes['created_at'];
             },
