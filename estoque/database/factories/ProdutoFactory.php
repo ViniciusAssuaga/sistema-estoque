@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Produto;
 use App\Models\Categoria;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Faker\Factory as FakerFactory;
 
 class ProdutoFactory extends Factory
 {
@@ -12,19 +13,21 @@ class ProdutoFactory extends Factory
 
     public function definition(): array
     {
-        $precoCusto = fake()->randomFloat(2, 5, 500);
-        $precoVenda = $precoCusto * fake()->randomFloat(2, 1.2, 2.5); // Margem de lucro realista
+        $faker = FakerFactory::create('pt_BR');
+
+        $precoCusto = $faker->randomFloat(2, 5, 500);
+        $precoVenda = $precoCusto * $faker->randomFloat(2, 1.2, 2.5);
 
         return [
-            'sku' => strtoupper(fake()->unique()->bothify('PROD-????-#####')),
-            'nome' => ucfirst(fake()->words(3, true)),
-            'categoria_id' => Categoria::inRandomOrder()->first()->id,
-            'descricao' => fake()->sentence(10),
+            'sku' => strtoupper($faker->unique()->bothify('PROD-????-#####')),
+            'nome' => ucfirst($faker->words(3, true)),
+            'categoria_id' => Categoria::inRandomOrder()->first()?->id ?? Categoria::factory(),
+            'descricao' => $faker->sentence(10),
             'preco_custo' => $precoCusto,
             'preco_venda' => round($precoVenda, 2),
-            'quantidade_estoque' => fake()->numberBetween(0, 500),
-            'estoque_minimo' => fake()->numberBetween(5, 20),
-            'ativo' => fake()->boolean(85), // 85% de chance de vir como ativo
+            'quantidade_estoque' => $faker->numberBetween(0, 500),
+            'estoque_minimo' => $faker->numberBetween(5, 20),
+            'ativo' => $faker->boolean(85),
         ];
     }
 }
