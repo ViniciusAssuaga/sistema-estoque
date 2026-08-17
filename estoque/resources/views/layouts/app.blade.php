@@ -30,6 +30,11 @@
             z-index: 1030;
         }
 
+        /* Ajuste do overlay quando o menu está aberto */
+        body.sidebar-open #sidebar-overlay {
+            display: block;
+        }
+
         /* Ajustes do Menu Superior Mobile */
         .navbar-mobile-top {
             background-color: #18181b !important;
@@ -71,13 +76,19 @@
                 left: 0;
             }
 
-            #sidebar.show + #sidebar-overlay {
-                display: block;
-            }
-
+            /* Ocupar ~95% da largura da tela no celular */
             #content-wrapper {
                 margin-left: 0 !important;
-                padding-top: 56px;
+                padding-top: 66px !important;
+                padding-left: 10px !important;
+                padding-right: 10px !important;
+                width: 100% !important;
+            }
+
+            #content-wrapper .container,
+            #content-wrapper .container-fluid {
+                padding-left: 5px !important;
+                padding-right: 5px !important;
             }
         }
     </style>
@@ -179,12 +190,17 @@
         $(document).ready(function() {
             const $sidebar = $('#sidebar');
 
+            function toggleSidebar() {
+                $sidebar.toggleClass('show');
+                $('body').toggleClass('sidebar-open');
+            }
+
             $('#sidebarToggle, #sidebar-overlay').on('click', function(e) {
                 e.stopPropagation();
-                $sidebar.toggleClass('show');
+                toggleSidebar();
             });
 
-            // Remove o foco do botão logo após o clique para soltar o estado mantido pelo navegador
+            // Remove o foco do botão logo após o clique
             $('#sidebarToggle').on('mouseup touchend keyup', function() {
                 $(this).blur();
             });
