@@ -57,6 +57,22 @@
             color: #ff2d20 !important;
         }
 
+        /* Regra específica para desktop: força o menu lateral a usar Flexbox de ponta a ponta */
+        @media (min-width: 992px) {
+            #sidebar {
+                display: flex;
+                flex-direction: column;
+            }
+            .sidebar-menu {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+            }
+            .user-section-container {
+                margin-top: auto !important;
+            }
+        }
+
         @media (max-width: 991.98px) {
             .navbar-mobile-top {
                 z-index: 1050 !important;
@@ -70,6 +86,7 @@
                 z-index: 1040;
                 padding-top: 56px;
                 transition: left 0.3s ease-in-out;
+                overflow-y: auto;
             }
 
             #sidebar.show {
@@ -147,32 +164,33 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('movimentacoes.index') }}" class="nav-link {{ request()->routeIs('movimentacoes*') ? 'active' : '' }}">
+                <a href="{!! route('movimentacoes.index') !!}" class="nav-link {{ request()->routeIs('movimentacoes*') ? 'active' : '' }}">
                     <i class="bi bi-arrow-left-right"></i>
                     <span>Movimentações</span>
                 </a>
             </li>
 
-            <!-- ITEM COM NOME DO USUÁRIO LOGADO -->
-            <li class="nav-item mt-auto border-top border-dark pt-2">
-                <div class="nav-link text-white-50 cursor-default px-3 py-2 d-flex align-items-center gap-2">
-                    <i class="bi bi-person-circle fs-5 text-laravel"></i>
-                    <span class="fw-semibold text-truncate" style="max-width: 170px;" title="{{ auth()->user()->name ?? 'Usuário' }}">
-                        {{ auth()->user()->name ?? 'Usuário' }}
-                    </span>
-                </div>
-            </li>
+            <!-- CONTAINER DO USUÁRIO E LOGOUT (Empurrado para baixo apenas no Desktop via CSS) -->
+            <div class="user-section-container mt-3 mt-lg-0">
+                <li class="nav-item border-top border-dark pt-2">
+                    <div class="nav-link text-white-50 cursor-default px-3 py-2 d-flex align-items-center gap-2">
+                        <i class="bi bi-person-circle fs-5 text-laravel"></i>
+                        <span class="fw-semibold text-truncate" style="max-width: 170px;" title="{{ auth()->user()->name ?? 'Usuário' }}">
+                            {{ auth()->user()->name ?? 'Usuário' }}
+                        </span>
+                    </div>
+                </li>
 
-            <!-- BOTÃO DE LOGOUT -->
-            <li class="nav-item">
-                <form method="POST" action="{{ route('logout') }}" id="logout-form">
-                    @csrf
-                    <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="nav-link text-danger">
-                        <i class="bi bi-box-arrow-left"></i>
-                        <span>Sair</span>
-                    </a>
-                </form>
-            </li>
+                <li class="nav-item mb-3 mb-lg-0">
+                    <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                        @csrf
+                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="nav-link text-danger">
+                            <i class="bi bi-box-arrow-left"></i>
+                            <span>Sair</span>
+                        </a>
+                    </form>
+                </li>
+            </div>
         </ul>
     </nav>
 
