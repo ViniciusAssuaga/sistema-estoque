@@ -31,17 +31,22 @@ WORKDIR /var/www/html
 # 5. Instala o Composer na imagem
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 6. Copia todo o código da aplicação (incluindo as pastas vendor e public/build locais)
+# 6. Copia primeiro apenas os arquivos de dependência para aproveitar o cache do Docker
+COPY composer.json composer.lock ./
+
+# Instala as dependências via Composer sem rodar os scripts ainda
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
+
+# 7. Copia o restante do código da aplicação
 COPY . .
 
-# 7. Regera o autoloader do Composer de forma otimizada
+# 8. Agora sim, roda o dump-autoload otimizado e os scripts com tudo no lugar
 RUN composer dump-autoload --optimize
 
-# 8. Configura permissões corretas para o usuário do Apache (www-data)
+# 9. Configura permissões corretas para o usuário do Apache (www-data)
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public
 
 EXPOSE 80
 
-# 9. Executa as migrations e inicia o Apache
-#CMD php artisan migrate --force --no-interaction && apache2-foreground
+# 10. Inicia o Apache
 CMD ["apache2-foreground"]
