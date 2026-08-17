@@ -7,6 +7,13 @@
         <p class="text-sm text-zinc-400">Entre com suas credenciais para continuar</p>
     </div>
 
+    <!-- BOX DE CREDENCIAIS DE TESTE -->
+    <div class="mb-6 p-3.5 bg-zinc-800/60 border border-zinc-700/60 rounded-lg text-center text-sm text-zinc-300 shadow-inner">
+        <span class="block font-medium text-[#FF2D20] mb-1">Login para testar o sistema:</span>
+        E-mail: <strong class="text-white">admin@test.com</strong><br>
+        Senha: <strong class="text-white">123</strong>
+    </div>
+
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
