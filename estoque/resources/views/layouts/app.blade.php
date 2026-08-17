@@ -64,11 +64,25 @@
                     <span>Movimentações</span>
                 </a>
             </li>
-            <li class="nav-item mt-auto">
-                <a href="https://www.google.com" class="nav-link text-danger">
-                    <i class="bi bi-box-arrow-left"></i>
-                    <span>Sair</span>
-                </a>
+            <!-- ITEM COM NOME DO USUÁRIO LOGADO -->
+            <li class="nav-item mt-auto border-top border-dark pt-2">
+                <div class="nav-link text-white-50 cursor-default px-3 py-2 d-flex align-items-center gap-2">
+                    <i class="bi bi-person-circle fs-5 text-laravel"></i>
+                    <span class="fw-semibold text-truncate" style="max-width: 170px;" title="{{ auth()->user()->name ?? 'Usuário' }}">
+                        {{ auth()->user()->name ?? 'Usuário' }}
+                    </span>
+                </div>
+            </li>
+
+            <!-- BOTÃO DE LOGOUT -->
+            <li class="nav-item">
+                <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                    @csrf
+                    <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="nav-link text-danger">
+                        <i class="bi bi-box-arrow-left"></i>
+                        <span>Sair</span>
+                    </a>
+                </form>
             </li>
         </ul>
     </nav>
