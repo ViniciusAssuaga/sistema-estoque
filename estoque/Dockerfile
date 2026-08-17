@@ -28,26 +28,20 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/conf-ava
 # Define o diretório de trabalho
 WORKDIR /var/www/html
 
-# 5. Instala o Composer (Copiando apenas os arquivos de dependência primeiro para aproveitar o cache)
+# 5. Instala o Composer na imagem
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-COPY composer.json composer.lock ./
-RUN composer install --optimize-autoloader --no-scripts --ignore-platform-reqs
 
-# 6. Instala dependências do Frontend (Aproveita o cache do Node)
-COPY package.json package-lock.json* ./
-RUN npm install
-
-# 7. Copia o restante do código da aplicação
+# 6. Copia todo o código da aplicação (incluindo as pastas vendor e public/build locais)
 COPY . .
 
-# 8. Executa scripts pós-instalação do Composer e compila o Vite
+# 7. Regera o autoloader do Composer de forma otimizada
 RUN composer dump-autoload --optimize
-RUN npm run build
 
-# 9. Configura permissões corretas para o usuário do Apache (www-data)
+# 8. Configura permissões corretas para o usuário do Apache (www-data)
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public
 
 EXPOSE 80
 
-# 10. Executa as migrations e inicia o Apache
-CMD php artisan migrate --force --no-interaction && apache2-foreground
+# 9. Executa as migrations e inicia o Apache
+#CMD php artisan migrate --force --no-interaction && apache2-foreground
+CMD ["apache2-foreground"]
