@@ -5,20 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Sistema de Estoque')</title>
-    
+
     <!-- Favicon Global -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('box-seam.svg') }}">
-    
+
     <!-- CSS das bibliotecas -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
+
     @stack('styles')
 
     <!-- Asset Bundler Oficial do Laravel (Vite) -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        #sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1030;
+        }
+
+        /* Ajustes do Menu Superior Mobile */
+        .navbar-mobile-top {
+            background-color: #18181b !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        /* Cor padrão: BRANCO */
+        #sidebarToggle {
+            color: #ffffff !important;
+            background-color: transparent !important;
+            border-color: transparent !important;
+            box-shadow: none !important;
+            outline: none !important;
+            transition: color 0.15s ease-in-out;
+        }
+
+        /* Cor ao passar o mouse ou no momento exato do clique: LARANJA LARAVEL */
+        #sidebarToggle:hover,
+        #sidebarToggle:active {
+            color: #ff2d20 !important;
+        }
+
+        @media (max-width: 991.98px) {
+            .navbar-mobile-top {
+                z-index: 1050 !important;
+            }
+
+            #sidebar {
+                position: fixed;
+                top: 0;
+                left: -260px;
+                height: 100vh;
+                z-index: 1040;
+                padding-top: 56px;
+                transition: left 0.3s ease-in-out;
+            }
+
+            #sidebar.show {
+                left: 0;
+            }
+
+            #sidebar.show + #sidebar-overlay {
+                display: block;
+            }
+
+            #content-wrapper {
+                margin-left: 0 !important;
+                padding-top: 56px;
+            }
+        }
+    </style>
 </head>
 <body>
+
+    <!-- NAVBAR SUPERIOR PARA DISPOSITIVOS MÓVEIS -->
+    <nav class="navbar navbar-dark d-lg-none fixed-top px-3 navbar-mobile-top">
+        <button class="btn border-0 fs-4 p-0" type="button" id="sidebarToggle">
+            <i class="bi bi-list"></i>
+        </button>
+        <span class="navbar-brand mb-0 h1 fs-5">
+            <i class="bi bi-box-seam text-laravel"></i> Estoque<span class="text-laravel">Sys</span>
+        </span>
+    </nav>
+
+    <!-- OVERLAY ESCURO AO ABRIR MENU NO CELULAR -->
+    <div id="sidebar-overlay"></div>
 
     <!-- MENU LATERAL FIXO -->
     <nav id="sidebar">
@@ -26,7 +103,7 @@
             <i class="bi bi-box-seam text-laravel"></i>
             <span>Estoque<span class="text-laravel">Sys</span></span>
         </a>
-        
+
         <ul class="sidebar-menu nav flex-column">
             <li class="nav-item">
                 <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
@@ -64,6 +141,7 @@
                     <span>Movimentações</span>
                 </a>
             </li>
+
             <!-- ITEM COM NOME DO USUÁRIO LOGADO -->
             <li class="nav-item mt-auto border-top border-dark pt-2">
                 <div class="nav-link text-white-50 cursor-default px-3 py-2 d-flex align-items-center gap-2">
@@ -96,7 +174,23 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
+    <script>
+        $(document).ready(function() {
+            const $sidebar = $('#sidebar');
+
+            $('#sidebarToggle, #sidebar-overlay').on('click', function(e) {
+                e.stopPropagation();
+                $sidebar.toggleClass('show');
+            });
+
+            // Remove o foco do botão logo após o clique para soltar o estado mantido pelo navegador
+            $('#sidebarToggle').on('mouseup touchend keyup', function() {
+                $(this).blur();
+            });
+        });
+    </script>
+
     @stack('scripts')
 </body>
 </html>
