@@ -31,7 +31,7 @@ WORKDIR /var/www/html
 # 5. Instala o Composer na imagem
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 6. Copia primeiro apenas os arquivos de dependência para aproveitar o cache do Docker
+# 6. Copia primeiro apenas os arquivos de dependência do PHP para aproveitar o cache do Docker
 COPY composer.json composer.lock ./
 
 # Instala as dependências via Composer sem rodar os scripts ainda
@@ -40,13 +40,17 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 # 7. Copia o restante do código da aplicação
 COPY . .
 
-# 8. Agora sim, roda o dump-autoload otimizado e os scripts com tudo no lugar
+# 8. Instala as dependências Node e compila o frontend com o Vite
+RUN npm install
+RUN npm run build
+
+# 9. Roda o dump-autoload otimizado do Composer com tudo no lugar
 RUN composer dump-autoload --optimize
 
-# 9. Configura permissões corretas para o usuário do Apache (www-data)
+# 10. Configura permissões corretas para o usuário do Apache (www-data)
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public
 
 EXPOSE 80
 
-# 10. Inicia o Apache
+# 11. Inicia o Apache
 CMD ["apache2-foreground"]
