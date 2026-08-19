@@ -209,3 +209,14 @@ div.dataTables_processing {
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+/* Força a largura correta do switch e o tamanho do SVG da bolinha */
+.form-switch .form-check-input {
+    width: 2em !important;
+    height: 1em !important;
+    background-size: contain !important;
+}
+
+.form-switch .form-check-input:checked {
+    background-position: right center !important;
+}
