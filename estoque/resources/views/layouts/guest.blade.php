@@ -5,7 +5,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <meta property="og:title" content="Sistema de Estoque">
+        <meta property="og:description" content="Sistema de controle de estoque desenvolvido em Laravel.">
+        <meta property="og:image" content="{{ asset('tela.png') }}">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ url()->current() }}">
+
+        <title>@yield('title', 'Login')</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
