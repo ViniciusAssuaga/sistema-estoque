@@ -67,7 +67,7 @@
                         </div>
                         <div class="col-md-8">
                             <label for="nome" class="form-label fw-semibold">Nome do Produto <span class="text-laravel">*</span></label>
-                            <input type="text" class="form-control" id="nome" name="nome" placeholder="Ex: Cadeira Ergonômica" required>
+                            <input type="text" class="form-control" id="nome" name="nome" required>
                         </div>
 
                         <div class="col-md-12">
@@ -133,11 +133,8 @@
             produtosStore: '/produtos'
         };
 
-        window.categoriasOptions = `
-            @foreach($categorias as $cat)
-                <option value="{{ $cat->id }}">{{ $cat->nome }}</option>
-            @endforeach
-        `;
+        // Renderização em linha única para evitar quebras de linha e whitespaces que piscam a seleção no primeiro frame
+        window.categoriasOptions = `@foreach($categorias as $cat)<option value="{{ $cat->id }}">{{ $cat->nome }}</option>@endforeach`;
     </script>
 
     <!-- Carregamento relativo de scripts JS -->

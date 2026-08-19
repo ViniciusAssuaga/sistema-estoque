@@ -3,6 +3,9 @@ $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
     const termoBusca = urlParams.get('q') || '';
 
+    // Estado da categoria selecionada
+    let categoriaSelecionada = '';
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -22,12 +25,12 @@ $(document).ready(function() {
 
     const tabela = $('#tabela-produtos').DataTable(window.getDataTableDefaults({
         search: {
-            search: termoBusca // Injeta o termo vindo da URL na busca do DataTables
+            search: termoBusca
         },
         ajax: {
             url: window.routes.produtosIndex,
             data: function (d) {
-                d.categoria_id = $('#filtro_categoria').val();
+                d.categoria_id = categoriaSelecionada;
             }
         },
         columns: [
@@ -42,27 +45,45 @@ $(document).ready(function() {
         ],
         order: [[1, 'asc']],
         initComplete: function(settings, json) {
-            const selectHtml = `
-                <label class="d-inline-flex align-items-center" style="margin-left: 100px !important; z-index: 10; margin-bottom: 0;">
-                    Categoria:
-                    <select id="filtro_categoria" class="form-select form-select-sm bg-dark text-white border-secondary ms-2" style="width: 180px;">
-                        <option value="">Todas</option>
-                        ${window.categoriasOptions || ''}
-                    </select>
-                </label>
-            `;
-            
-            $('#tabela-produtos_wrapper .dataTables_length').addClass('d-flex align-items-center').append(selectHtml);
-            
-            // Limpa o parâmetro da URL após carregar para manter a interface limpa
+            // Injeta o select apenas se ele não existir no wrapper
+            if ($('#filtro_categoria').length === 0) {
+                // Remove qualquer atributo 'selected' nativo trazido na string de opções para não dar conflito de renderização
+                let rawOptions = (window.categoriasOptions || '').replace(/selected/gi, '');
+
+                const selectHtml = `
+                    <label class="d-inline-flex align-items-center" style="margin-left: 80px !important; z-index: 10; margin-bottom: 0;">
+                        Categoria:
+                        <select id="filtro_categoria" class="form-select form-select-sm bg-dark text-white border-secondary ms-2" style="width: 180px;">
+                            <option value="" selected>Todas</option>
+                            ${rawOptions}
+                        </select>
+                    </label>
+                `;
+                
+                $('#tabela-produtos_wrapper .dataTables_length').addClass('d-flex align-items-center').append(selectHtml);
+            }
+
             if (termoBusca) {
                 window.history.replaceState(null, null, window.location.pathname);
+            }
+        },
+        drawCallback: function() {
+            const $filtro = $('#filtro_categoria');
+            if ($filtro.length && $filtro.val() !== categoriaSelecionada) {
+                $filtro.val(categoriaSelecionada);
             }
         }
     }));
 
-    // Recarrega a tabela via Ajax sempre que o filtro de categoria for alterado
-    $(document).on('change', '#filtro_categoria', function() {
+    // Mantém a sincronia em trocas de paginação sem causar re-renderização visual
+    tabela.on('length.dt', function() {
+        $('#filtro_categoria').val(categoriaSelecionada);
+    });
+
+    // Listener isolado apontando diretamente para o elemento
+    $(document).on('change', '#filtro_categoria', function(e) {
+        e.stopPropagation();
+        categoriaSelecionada = $(this).val() || '';
         tabela.ajax.reload();
     });
 
