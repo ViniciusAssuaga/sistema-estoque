@@ -91,7 +91,7 @@
 
                         <div class="col-md-6">
                             <label for="quantidade_estoque" class="form-label fw-semibold">Qtd. Estoque <span class="text-laravel">*</span></label>
-                            <input type="number" class="form-control" id="quantidade_estoque" name="quantidade_estoque" placeholder="10" required>
+                            <input type="number" class="form-control" id="quantidade_estoque" name="quantidade_estoque" required>
                         </div>
                         <div class="col-md-6">
                             <label for="estoque_minimo" class="form-label fw-semibold">Estoque Mínimo</label>

@@ -135,7 +135,7 @@ $(document).ready(function() {
 
                         Swal.fire({
                             icon: 'success',
-                            title: 'Deletado!',
+                            title: 'Excluído!',
                             text: response.message,
                             timer: 2000,
                             showConfirmButton: false,
