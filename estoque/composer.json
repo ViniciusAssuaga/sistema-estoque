@@ -15,6 +15,7 @@
     },
     "require-dev": {
         "fly-apps/dockerfile-laravel": "^1.0",
+        "laravel/boost": "^2.5",
         "laravel/breeze": "^2.4",
         "laravel/pail": "^1.2.5",
         "laravel/pao": "^1.0.6",

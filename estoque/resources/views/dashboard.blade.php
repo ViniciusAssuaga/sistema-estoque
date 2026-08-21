@@ -5,6 +5,25 @@
 @push('styles')
 <!-- Carrega o Chart.js especificamente para a dashboard -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    /* Estilização dos botões do gráfico */
+    .btn-filtro-grafico {
+        background-color: transparent;
+        color: #6c757d;
+        border: 1px solid #495057;
+        transition: all 0.2s ease-in-out;
+    }
+    .btn-filtro-grafico:hover {
+        color: #fff;
+        border-color: #6c757d;
+    }
+    .btn-filtro-grafico.active {
+        background-color: transparent !important;
+        color: var(--laravel-red, #d63327) !important;
+        border-color: var(--laravel-red, #d63327) !important;
+        font-weight: 600;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -24,7 +43,7 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <span class="text-secondary small fw-semibold text-uppercase">Total de Produtos</span>
-                        <h2 class="h3 fw-bold text-white mb-0 mt-1">{{ number_format($totalProdutos, 0, ',', '.') }}</h2>
+                        <h2 class="h3 fw-bold text-white mb-0 mt-1">{{ number_format($totalProdutos ?? 0, 0, ',', '.') }}</h2>
                         <small class="text-success"><i class="bi bi-arrow-up"></i> Cadastrados no sistema</small>
                     </div>
                     <div class="stat-icon" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background-color: rgba(214, 51, 39, 0.15); color: var(--laravel-red); border-radius: 8px; font-size: 1.5rem;">
@@ -39,7 +58,7 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <span class="text-secondary small fw-semibold text-uppercase">Valor em Estoque</span>
-                        <h2 class="h3 fw-bold text-white mb-0 mt-1">R$ {{ number_format($valorTotalEstoque, 2, ',', '.') }}</h2>
+                        <h2 class="h3 fw-bold text-white mb-0 mt-1">R$ {{ number_format($valorTotalEstoque ?? 0, 2, ',', '.') }}</h2>
                         <small class="text-success"><i class="bi bi-shield-check"></i> Custo total atual</small>
                     </div>
                     <div class="stat-icon" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background-color: rgba(214, 51, 39, 0.15); color: var(--laravel-red); border-radius: 8px; font-size: 1.5rem;">
@@ -54,7 +73,7 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <span class="text-secondary small fw-semibold text-uppercase">Estoque Baixo</span>
-                        <h2 class="h3 fw-bold text-warning mb-0 mt-1">{{ $totalEstoqueBaixo }}</h2>
+                        <h2 class="h3 fw-bold text-warning mb-0 mt-1">{{ $totalEstoqueBaixo ?? 0 }}</h2>
                         <small class="text-warning">Requer atenção</small>
                     </div>
                     <div class="stat-icon" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background-color: rgba(255, 193, 7, 0.15); color: #ffc107; border-radius: 8px; font-size: 1.5rem;">
@@ -69,7 +88,7 @@
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <span class="text-secondary small fw-semibold text-uppercase">Movimentações Hoje</span>
-                        <h2 class="h3 fw-bold text-info mb-0 mt-1">{{ $movimentacoesHoje }}</h2>
+                        <h2 class="h3 fw-bold text-info mb-0 mt-1">{{ $movimentacoesHoje ?? 0 }}</h2>
                         <small class="text-info">Entradas e saídas</small>
                     </div>
                     <div class="stat-icon" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background-color: rgba(13, 202, 240, 0.15); color: #0dcaf0; border-radius: 8px; font-size: 1.5rem;">
@@ -85,8 +104,13 @@
         <div class="col-lg-8">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-transparent border-bottom border-dark py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold mb-0 text-white"><i class="bi bi-graph-up text-laravel me-2"></i> Fluxo de Movimentações (Últimos 7 Dias)</h5>
-                    <span class="badge bg-dark border border-secondary text-secondary">Semanal</span>
+                    <h5 class="card-title fw-bold mb-0 text-white" id="tituloGraficoFluxo">
+                        <i class="bi bi-graph-up text-laravel me-2"></i> Fluxo de Movimentações (Últimos 7 Dias)
+                    </h5>
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Filtro de período">
+                        <button type="button" class="btn btn-filtro-grafico active" id="btnFiltroSemanal">Semanal</button>
+                        <button type="button" class="btn btn-filtro-grafico" id="btnFiltroMensal">Mensal</button>
+                    </div>
                 </div>
                 <div class="card-body" style="position: relative; height: 300px;">
                     <canvas id="graficoMovimentacoes"></canvas>
@@ -128,7 +152,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($ultimasMovimentacoes as $mov)
+                                @forelse($ultimasMovimentacoes ?? [] as $mov)
                                     <tr>
                                         <td><span class="fw-semibold text-white">{{ $mov->produto->nome ?? 'Produto Removido' }}</span></td>
                                         <td>
@@ -141,7 +165,7 @@
                                         <td class="{{ $mov->tipo === 'entrada' ? 'text-success' : 'text-danger' }} fw-bold">
                                             {{ $mov->tipo === 'entrada' ? '+' : '-' }}{{ $mov->quantidade }}
                                         </td>
-                                        <td class="text-secondary small">{{ $mov->created_at->format('d/m/Y H:i') }}</td>
+                                        <td class="text-secondary small">{{ $mov->created_at ? $mov->created_at->format('d/m/Y H:i') : '-' }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -172,7 +196,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($produtosEstoqueBaixo as $prod)
+                                @forelse($produtosEstoqueBaixo ?? [] as $prod)
                                     <tr>
                                         <td><span class="fw-semibold text-white">{{ $prod->nome }}</span></td>
                                         <td><span class="text-danger fw-bold">{{ $prod->quantidade_estoque }}</span></td>
@@ -199,15 +223,70 @@
 @push('scripts')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Gráfico de Movimentações (Últimos 7 Dias dinâmico via backend)
+        // Função auxiliar para garantir Array numérico simples
+        function paraArray(dados) {
+            if (!dados) return [];
+            if (Array.isArray(dados)) return dados;
+            if (typeof dados === 'object') return Object.values(dados);
+            return [];
+        }
+
+        // Recupera os dados injetados pelo Blade
+        const rawSemanalLabels = @json($diasLabels ?? []);
+        const rawSemanalEntradas = @json($dadosEntradas ?? []);
+        const rawSemanalSaidas = @json($dadosSaidas ?? []);
+
+        const rawMensalLabels = @json($mesesLabels ?? []);
+        const rawMensalEntradas = @json($dadosEntradasMensal ?? []);
+        const rawMensalSaidas = @json($dadosSaidasMensal ?? []);
+
+        // Trata os dados semanais
+        let dadosSemanalLabels = paraArray(rawSemanalLabels);
+        let dadosSemanalEntradas = paraArray(rawSemanalEntradas);
+        let dadosSemanalSaidas = paraArray(rawSemanalSaidas);
+
+        // Trata os dados mensais (Gera fallback caso esteja vazio na Controller)
+        let dadosMensalLabels = paraArray(rawMensalLabels);
+        let dadosMensalEntradas = paraArray(rawMensalEntradas);
+        let dadosMensalSaidas = paraArray(rawMensalSaidas);
+
+        if (dadosMensalLabels.length === 0) {
+            const mesesNomes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            const dataAtual = new Date();
+            dadosMensalLabels = [];
+            dadosMensalEntradas = new Array(12).fill(0);
+            dadosMensalSaidas = new Array(12).fill(0);
+
+            for (let i = 11; i >= 0; i--) {
+                const d = new Date(dataAtual.getFullYear(), dataAtual.getMonth() - i, 1);
+                dadosMensalLabels.push(mesesNomes[d.getMonth()] + '/' + String(d.getFullYear()).slice(-2));
+            }
+        }
+
+        const dadosGrafico = {
+            semanal: {
+                titulo: '<i class="bi bi-graph-up text-laravel me-2"></i> Fluxo de Movimentações (Últimos 7 Dias)',
+                labels: dadosSemanalLabels,
+                entradas: dadosSemanalEntradas,
+                saidas: dadosSemanalSaidas
+            },
+            mensal: {
+                titulo: '<i class="bi bi-graph-up text-laravel me-2"></i> Fluxo de Movimentações (Últimos 12 Meses)',
+                labels: dadosMensalLabels,
+                entradas: dadosMensalEntradas,
+                saidas: dadosMensalSaidas
+            }
+        };
+
+        // Inicialização do Gráfico de Movimentações
         const ctxMov = document.getElementById('graficoMovimentacoes').getContext('2d');
-        new Chart(ctxMov, {
+        const chartMov = new Chart(ctxMov, {
             type: 'line',
             data: {
-                labels: @json($diasLabels),
+                labels: dadosGrafico.semanal.labels,
                 datasets: [{
                     label: 'Entradas',
-                    data: @json($dadosEntradas),
+                    data: dadosGrafico.semanal.entradas,
                     borderColor: '#198754',
                     backgroundColor: 'rgba(25, 135, 84, 0.1)',
                     borderWidth: 2,
@@ -215,7 +294,7 @@
                     fill: true
                 }, {
                     label: 'Saídas',
-                    data: @json($dadosSaidas),
+                    data: dadosGrafico.semanal.saidas,
                     borderColor: '#D63327',
                     backgroundColor: 'rgba(214, 51, 39, 0.1)',
                     borderWidth: 2,
@@ -237,21 +316,56 @@
                         ticks: { color: '#A0A0A0' }
                     },
                     y: {
+                        beginAtZero: true,
                         grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: '#A0A0A0' }
+                        ticks: { color: '#A0A0A0', precision: 0 }
                     }
                 }
             }
         });
 
-        // Gráfico de Categorias Populares dinâmico via backend
+        // Eventos dos Botões de Filtro
+        const btnSemanal = document.getElementById('btnFiltroSemanal');
+        const btnMensal = document.getElementById('btnFiltroMensal');
+        const tituloGrafico = document.getElementById('tituloGraficoFluxo');
+
+        function atualizarGrafico(periodo) {
+            const config = dadosGrafico[periodo];
+            
+            tituloGrafico.innerHTML = config.titulo;
+            chartMov.data.labels = config.labels;
+            chartMov.data.datasets[0].data = config.entradas;
+            chartMov.data.datasets[1].data = config.saidas;
+            chartMov.update();
+        }
+
+        btnSemanal.addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                this.classList.add('active');
+                btnMensal.classList.remove('active');
+                atualizarGrafico('semanal');
+            }
+        });
+
+        btnMensal.addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                this.classList.add('active');
+                btnSemanal.classList.remove('active');
+                atualizarGrafico('mensal');
+            }
+        });
+
+        // Gráfico de Categorias Populares
         const ctxCat = document.getElementById('graficoCategorias').getContext('2d');
+        const rawCatLabels = @json($categoriasLabels ?? []);
+        const rawCatTotais = @json($categoriasTotais ?? []);
+
         new Chart(ctxCat, {
             type: 'doughnut',
             data: {
-                labels: @json($categoriasLabels),
+                labels: paraArray(rawCatLabels),
                 datasets: [{
-                    data: @json($categoriasTotais),
+                    data: paraArray(rawCatTotais),
                     backgroundColor: ['#D63327', '#fd7e14', '#ffc107', '#0dcaf0', '#6610f2', '#20c997'],
                     borderWidth: 0
                 }]
