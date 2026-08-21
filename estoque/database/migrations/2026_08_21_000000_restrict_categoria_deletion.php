@@ -1,30 +1,19 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('produtos', function (Blueprint $table) {
-            $table->dropForeign(['categoria_id']);
-            $table->foreign('categoria_id')
-                ->references('id')
-                ->on('categorias')
-                ->restrictOnDelete();
-        });
+        DB::statement('ALTER TABLE produtos DROP CONSTRAINT IF EXISTS produtos_categoria_id_foreign');
+        DB::statement('ALTER TABLE produtos ADD CONSTRAINT produtos_categoria_id_foreign FOREIGN KEY (categoria_id) REFERENCES categorias (id) ON DELETE RESTRICT');
     }
 
     public function down(): void
     {
-        Schema::table('produtos', function (Blueprint $table) {
-            $table->dropForeign(['categoria_id']);
-            $table->foreign('categoria_id')
-                ->references('id')
-                ->on('categorias')
-                ->nullOnDelete();
-        });
+        DB::statement('ALTER TABLE produtos DROP CONSTRAINT IF EXISTS produtos_categoria_id_foreign');
+        DB::statement('ALTER TABLE produtos ADD CONSTRAINT produtos_categoria_id_foreign FOREIGN KEY (categoria_id) REFERENCES categorias (id) ON DELETE SET NULL');
     }
 };
