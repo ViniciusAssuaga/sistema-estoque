@@ -14,9 +14,11 @@
             <h1 class="h3 fw-bold mb-0">Gerenciamento de <span class="text-laravel">Produtos</span></h1>
             <small class="text-secondary">Painel Server-Side com Laravel e DataTables</small>
         </div>
-        <button class="btn btn-laravel px-4 py-2" id="btnNovoProduto">
-            + Novo Produto
-        </button>
+        @if(auth()->user()->canCreateRecords())
+            <button class="btn btn-laravel px-4 py-2" id="btnNovoProduto">
+                + Novo Produto
+            </button>
+        @endif
     </div>
 
     <div class="card shadow-lg rounded-3">
@@ -105,7 +107,7 @@
 
                         <div class="col-12">
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="ativo" name="ativo" checked>
+                                <input class="form-check-input" type="checkbox" id="ativo" name="ativo" value="1" checked>
                                 <label class="form-check-label fw-semibold" for="ativo">Produto Ativo</label>
                             </div>
                         </div>

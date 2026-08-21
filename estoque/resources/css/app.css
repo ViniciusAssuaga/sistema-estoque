@@ -214,7 +214,6 @@ div.dataTables_processing {
 .form-switch .form-check-input {
     width: 2em !important;
     height: 1em !important;
-    background-size: contain !important;
 }
 
 .form-switch .form-check-input:checked {

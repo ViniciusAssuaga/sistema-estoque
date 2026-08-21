@@ -74,6 +74,8 @@ class ProdutoController extends Controller
 
     public function store(StoreProdutoRequest $request): JsonResponse
     {
+        abort_unless($request->user()->canCreateRecords(), 403);
+
         try {
             $data = $request->validated();
             $data['ativo']       = $request->has('ativo');
@@ -105,6 +107,8 @@ class ProdutoController extends Controller
 
     public function update(UpdateProdutoRequest $request, $id): JsonResponse
     {
+        abort_unless($request->user()->canEditRecords(), 403);
+
         try {
             $produto = Produto::findOrFail($id);
 
@@ -137,6 +141,8 @@ class ProdutoController extends Controller
 
     public function destroy($id): JsonResponse
     {
+        abort_unless(request()->user()->canDeleteRecords(), 403);
+
         try {
             DB::transaction(function () use ($id) {
                 $produto = Produto::withTrashed()->findOrFail($id);

@@ -14,7 +14,15 @@ $(document).ready(function() {
             { data: 'email', name: 'email' },
             { data: 'telefone', name: 'telefone' },
             { data: 'cpf_cnpj', name: 'cpf_cnpj' },
-            { data: 'acoes', name: 'acoes', orderable: false, searchable: false }
+            {
+                data: 'acoes', name: 'acoes', orderable: false, searchable: false,
+                render: function(data) {
+                    const $acoes = $('<div>').html(data || '');
+                    if (!window.userPermissions.canEdit) $acoes.find('.btn-editar').remove();
+                    if (!window.userPermissions.canDelete) $acoes.find('.btn-excluir').remove();
+                    return $acoes.html();
+                }
+            }
         ],
         order: [[0, 'asc']]
     }));

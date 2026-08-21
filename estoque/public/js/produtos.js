@@ -41,7 +41,15 @@ $(document).ready(function() {
             { data: 'preco_venda_formatted', name: 'preco_venda' },
             { data: 'estoque_badge', name: 'quantidade_estoque' },
             { data: 'status_badge', name: 'ativo' },
-            { data: 'acoes', name: 'acoes', orderable: false, searchable: false }
+            {
+                data: 'acoes', name: 'acoes', orderable: false, searchable: false,
+                render: function(data) {
+                    const $acoes = $('<div>').html(data || '');
+                    if (!window.userPermissions.canEdit) $acoes.find('.btn-editar').remove();
+                    if (!window.userPermissions.canDelete) $acoes.find('.btn-excluir').remove();
+                    return $acoes.html();
+                }
+            }
         ],
         order: [[1, 'asc']],
         initComplete: function(settings, json) {
@@ -93,6 +101,7 @@ $(document).ready(function() {
         $('#alertErros').addClass('d-none');
         $('#listaErros').empty();
         $('#ativo').prop('checked', true);
+        $('#quantidade_estoque').prop('disabled', false);
 
         $('#modalTitulo').html('Cadastrar Novo <span class="text-laravel">Produto</span>');
         $('#btnSalvar').text('Salvar Produto');
@@ -116,6 +125,7 @@ $(document).ready(function() {
             $('#preco_venda').val(parseFloat(data.preco_venda).toLocaleString('pt-BR', { minimumFractionDigits: 2 }));
             
             $('#quantidade_estoque').val(data.quantidade_estoque);
+            $('#quantidade_estoque').prop('disabled', true);
             $('#estoque_minimo').val(data.estoque_minimo);
             $('#descricao').val(data.descricao);
             $('#ativo').prop('checked', Boolean(data.ativo));
@@ -135,6 +145,9 @@ $(document).ready(function() {
         
         const url = isEdit ? `/produtos/${id}` : window.routes.produtosStore;
         const method = isEdit ? 'PUT' : 'POST';
+        const dadosFormulario = $(this).serializeArray().filter(function(campo) {
+            return !isEdit || campo.name !== 'quantidade_estoque';
+        });
 
         $('#alertErros').addClass('d-none');
         $('#listaErros').empty();
@@ -147,7 +160,7 @@ $(document).ready(function() {
         $.ajax({
             url: url,
             method: method,
-            data: $(this).serialize(),
+            data: dadosFormulario,
             success: function(response) {
                 $('#modalProduto').modal('hide');
                 $btn.prop('disabled', false).text(textoOriginal);

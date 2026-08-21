@@ -19,6 +19,19 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
+        .form-switch .form-check-input {
+            background-color: #495057 !important;
+            background-image: radial-gradient(circle, #FFFFFF 0 0.36em, transparent 0.39em) !important;
+            background-size: 1em 1em !important;
+            background-position: left center !important;
+            background-repeat: no-repeat !important;
+        }
+
+        .form-switch .form-check-input:checked {
+            background-color: var(--laravel-red) !important;
+            background-position: right center !important;
+        }
+
         #sidebar-overlay {
             display: none;
             position: fixed;
@@ -203,6 +216,14 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        window.userPermissions = {
+            canCreate: @json(auth()->user()->canCreateRecords()),
+            canEdit: @json(auth()->user()->canEditRecords()),
+            canDelete: @json(auth()->user()->canDeleteRecords())
+        };
+    </script>
 
     <script>
         $(document).ready(function() {

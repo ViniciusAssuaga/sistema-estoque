@@ -14,9 +14,11 @@
             <h1 class="h3 fw-bold mb-0">Gerenciamento de <span class="text-laravel">Clientes</span></h1>
             <small class="text-secondary">Painel Server-Side com Laravel e DataTables</small>
         </div>
-        <button class="btn btn-laravel px-4 py-2" id="btnNovoCliente">
-            + Novo Cliente
-        </button>
+        @if(auth()->user()->canCreateRecords())
+            <button class="btn btn-laravel px-4 py-2" id="btnNovoCliente">
+                + Novo Cliente
+            </button>
+        @endif
     </div>
 
     <!-- TABELA -->
@@ -94,5 +96,5 @@
         };
     </script>
     <script src="/js/datatables-defaults.js"></script>
-    <script src="/js/clientes.js"></script>
+    <script src="/js/clientes.js?v={{ time() }}"></script>
 @endpush
