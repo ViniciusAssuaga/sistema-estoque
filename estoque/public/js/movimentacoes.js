@@ -11,6 +11,11 @@ $(document).ready(function() {
         serverSide: true,
         ajax: {
             url: window.routes.movimentacoesIndex,
+            error: function(xhr) {
+                if (xhr.status === 401 || xhr.status === 419) {
+                    window.location.href = '/login';
+                }
+            },
         },
         columns: [
             { 

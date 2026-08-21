@@ -10,7 +10,14 @@ $(document).ready(function() {
     var table = $('#tabela-categorias').DataTable(
         window.getDataTableDefaults({
             // Mudar para URL relativa
-            ajax: '/api/categorias',
+            ajax: {
+                url: '/api/categorias',
+                error: function(xhr) {
+                    if (xhr.status === 401 || xhr.status === 419) {
+                        window.location.href = '/login';
+                    }
+                }
+            },
             columns: [
                 { data: 'id', name: 'id' },
                 { data: 'nome', name: 'nome' },

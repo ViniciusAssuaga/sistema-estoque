@@ -8,7 +8,14 @@ $(document).ready(function() {
     const tabelaFornecedores = $('#tabela-fornecedores').DataTable(window.getDataTableDefaults({
         processing: true,
         serverSide: true,
-        ajax: window.routes.fornecedoresIndex,
+        ajax: {
+            url: window.routes.fornecedoresIndex,
+            error: function(xhr) {
+                if (xhr.status === 401 || xhr.status === 419) {
+                    window.location.href = '/login';
+                }
+            }
+        },
         columns: [
             { data: 'razao_social', name: 'razao_social' },
             { data: 'nome_fantasia', name: 'nome_fantasia', defaultContent: '-' },
