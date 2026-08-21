@@ -1,4 +1,10 @@
 $(document).ready(function() {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
     // Configuração padrão do SweetAlert2 em modo Dark
     const swalDark = Swal.mixin({
         background: '#212529',
