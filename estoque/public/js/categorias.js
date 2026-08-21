@@ -145,7 +145,13 @@ $(document).ready(function() {
                     type: 'DELETE',
                     success: function(response) {
                         table.ajax.reload(null, false);
-                        swalDark.fire('Excluído!', response.message, 'success');
+                        swalDark.fire({
+                            title: 'Excluído!',
+                            text: response.message,
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
                     },
                     error: function(xhr) {
                         swalDark.fire('Erro!', xhr.responseJSON?.message || 'Erro ao excluir.', 'error');
