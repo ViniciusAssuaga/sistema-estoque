@@ -1,3 +1,5 @@
+# EstoqueSys
+
 **EstoqueSys** é um sistema de estoque em **Laravel 13** (PHP 8.3), no Laragon, com MySQL no banco `estoque`. A tela logada usa Bootstrap 5 (tema escuro) + DataTables + modais AJAX. Auth vem do **Laravel Breeze**; o cadastro público está desligado.
 
 ## Arquitetura
