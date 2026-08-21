@@ -110,6 +110,7 @@
                     <div class="btn-group btn-group-sm" role="group" aria-label="Filtro de período">
                         <button type="button" class="btn btn-filtro-grafico active" id="btnFiltroSemanal">Semanal</button>
                         <button type="button" class="btn btn-filtro-grafico" id="btnFiltroMensal">Mensal</button>
+                        <button type="button" class="btn btn-filtro-grafico" id="btnFiltroAnual">Anual</button>
                     </div>
                 </div>
                 <div class="card-body" style="position: relative; height: 300px;">
@@ -240,6 +241,10 @@
         const rawMensalEntradas = @json($dadosEntradasMensal ?? []);
         const rawMensalSaidas = @json($dadosSaidasMensal ?? []);
 
+        const rawAnualLabels = @json($anosLabels ?? []);
+        const rawAnualEntradas = @json($dadosEntradasAnual ?? []);
+        const rawAnualSaidas = @json($dadosSaidasAnual ?? []);
+
         // Trata os dados semanais
         let dadosSemanalLabels = paraArray(rawSemanalLabels);
         let dadosSemanalEntradas = paraArray(rawSemanalEntradas);
@@ -249,6 +254,10 @@
         let dadosMensalLabels = paraArray(rawMensalLabels);
         let dadosMensalEntradas = paraArray(rawMensalEntradas);
         let dadosMensalSaidas = paraArray(rawMensalSaidas);
+
+        let dadosAnualLabels = paraArray(rawAnualLabels);
+        let dadosAnualEntradas = paraArray(rawAnualEntradas);
+        let dadosAnualSaidas = paraArray(rawAnualSaidas);
 
         if (dadosMensalLabels.length === 0) {
             const mesesNomes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -260,6 +269,17 @@
             for (let i = 11; i >= 0; i--) {
                 const d = new Date(dataAtual.getFullYear(), dataAtual.getMonth() - i, 1);
                 dadosMensalLabels.push(mesesNomes[d.getMonth()] + '/' + String(d.getFullYear()).slice(-2));
+            }
+        }
+
+        if (dadosAnualLabels.length === 0) {
+            const anoAtual = new Date().getFullYear();
+            dadosAnualLabels = [];
+            dadosAnualEntradas = new Array(5).fill(0);
+            dadosAnualSaidas = new Array(5).fill(0);
+
+            for (let i = 4; i >= 0; i--) {
+                dadosAnualLabels.push(String(anoAtual - i));
             }
         }
 
@@ -275,6 +295,12 @@
                 labels: dadosMensalLabels,
                 entradas: dadosMensalEntradas,
                 saidas: dadosMensalSaidas
+            },
+            anual: {
+                titulo: '<i class="bi bi-graph-up text-laravel me-2"></i> Fluxo de Movimentações (Últimos 5 Anos)',
+                labels: dadosAnualLabels,
+                entradas: dadosAnualEntradas,
+                saidas: dadosAnualSaidas
             }
         };
 
@@ -327,11 +353,14 @@
         // Eventos dos Botões de Filtro
         const btnSemanal = document.getElementById('btnFiltroSemanal');
         const btnMensal = document.getElementById('btnFiltroMensal');
+        const btnAnual = document.getElementById('btnFiltroAnual');
         const tituloGrafico = document.getElementById('tituloGraficoFluxo');
+
+        const botoesFiltro = [btnSemanal, btnMensal, btnAnual];
 
         function atualizarGrafico(periodo) {
             const config = dadosGrafico[periodo];
-            
+
             tituloGrafico.innerHTML = config.titulo;
             chartMov.data.labels = config.labels;
             chartMov.data.datasets[0].data = config.entradas;
@@ -339,20 +368,24 @@
             chartMov.update();
         }
 
-        btnSemanal.addEventListener('click', function() {
-            if (!this.classList.contains('active')) {
-                this.classList.add('active');
-                btnMensal.classList.remove('active');
-                atualizarGrafico('semanal');
+        function selecionarPeriodo(periodo, botaoSelecionado) {
+            if (!botaoSelecionado.classList.contains('active')) {
+                botoesFiltro.forEach(botao => botao.classList.remove('active'));
+                botaoSelecionado.classList.add('active');
+                atualizarGrafico(periodo);
             }
+        }
+
+        btnSemanal.addEventListener('click', function() {
+            selecionarPeriodo('semanal', this);
         });
 
         btnMensal.addEventListener('click', function() {
-            if (!this.classList.contains('active')) {
-                this.classList.add('active');
-                btnSemanal.classList.remove('active');
-                atualizarGrafico('mensal');
-            }
+            selecionarPeriodo('mensal', this);
+        });
+
+        btnAnual.addEventListener('click', function() {
+            selecionarPeriodo('anual', this);
         });
 
         // Gráfico de Categorias Populares

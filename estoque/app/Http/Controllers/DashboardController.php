@@ -70,7 +70,25 @@ class DashboardController extends Controller
                 ->sum('quantidade');
         }
 
-        // 5. Gráfico de Categorias Populares
+        // 5. Gráfico de Movimentações (Últimos 5 Anos - Anual)
+        $anosLabels = [];
+        $dadosEntradasAnual = [];
+        $dadosSaidasAnual = [];
+
+        for ($i = 4; $i >= 0; $i--) {
+            $ano = Carbon::now()->subYears($i)->year;
+            $anosLabels[] = (string) $ano;
+
+            $dadosEntradasAnual[] = (int) Movimentacao::whereYear('created_at', $ano)
+                ->where('tipo', 'entrada')
+                ->sum('quantidade');
+
+            $dadosSaidasAnual[] = (int) Movimentacao::whereYear('created_at', $ano)
+                ->where('tipo', 'saida')
+                ->sum('quantidade');
+        }
+
+        // 6. Gráfico de Categorias Populares
         $categorias = Categoria::withCount('produtos')->take(5)->get();
         $categoriasLabels = $categorias->pluck('nome')->values();
         $categoriasTotais = $categorias->pluck('produtos_count')->values();
@@ -88,6 +106,9 @@ class DashboardController extends Controller
             'mesesLabels',
             'dadosEntradasMensal',
             'dadosSaidasMensal',
+            'anosLabels',
+            'dadosEntradasAnual',
+            'dadosSaidasAnual',
             'categoriasLabels',
             'categoriasTotais'
         ));
