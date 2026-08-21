@@ -22,11 +22,10 @@ class UpdateProdutoRequest extends FormRequest
 
     public function rules(): array
     {
-        // Pega o ID do produto da rota (/produtos/{produto})
-        $produtoId = $this->route('produto') ? $this->route('produto')->id : $this->id;
+        $produtoId = $this->route('produto') ?? $this->id;
 
         return [
-            'sku' => 'required|string|max:100|unique:produtos,sku,' . $produtoId,
+            'sku' => 'required|string|max:50|unique:produtos,sku,' . $produtoId,
             'nome' => 'required|string|max:255',
             'categoria_id' => 'required|exists:categorias,id',
             'preco_custo' => 'required|numeric|min:0|max:99999999.99',

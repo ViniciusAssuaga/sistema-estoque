@@ -23,7 +23,7 @@ class StoreProdutoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'sku' => 'required|string|max:100|unique:produtos,sku',
+            'sku' => 'required|string|max:50|unique:produtos,sku',
             'nome' => 'required|string|max:255',
             'categoria_id' => 'required|exists:categorias,id',
             'preco_custo' => 'required|numeric|min:0|max:99999999.99',
