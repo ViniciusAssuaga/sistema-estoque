@@ -1,26 +1,19 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
+    public $withinTransaction = false;
+
     public function up(): void
     {
-        if (!Schema::hasColumn('users', 'tipo')) {
-            Schema::table('users', function (Blueprint $table) {
-                $table->unsignedTinyInteger('tipo')->default(0)->after('password');
-            });
-        }
+        DB::statement("ALTER TABLE users ADD COLUMN IF NOT EXISTS tipo SMALLINT NOT NULL DEFAULT 0");
     }
 
     public function down(): void
     {
-        if (Schema::hasColumn('users', 'tipo')) {
-            Schema::table('users', function (Blueprint $table) {
-                $table->dropColumn('tipo');
-            });
-        }
+        DB::statement('ALTER TABLE users DROP COLUMN IF EXISTS tipo');
     }
 };
