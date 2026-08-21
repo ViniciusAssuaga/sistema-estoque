@@ -6,12 +6,7 @@ $(document).ready(function() {
     });
 
     // Configuração padrão do SweetAlert2 em modo Dark
-    const swalDark = Swal.mixin({
-        background: '#212529',
-        color: '#ffffff',
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#6c757d'
-    });
+    const swalDark = window.swalPadrao;
 
     var table = $('#tabela-categorias').DataTable(
         window.getDataTableDefaults({
@@ -75,7 +70,13 @@ $(document).ready(function() {
             success: function(response) {
                 $('#modalCategoria').modal('hide');
                 table.ajax.reload(null, false);
-                swalDark.fire('Sucesso!', response.message, 'success');
+                swalDark.fire({
+                    icon: 'success',
+                    title: 'Sucesso!',
+                    text: response.message,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             },
             error: function(xhr) {
                 if (xhr.status === 422) {
@@ -92,7 +93,9 @@ $(document).ready(function() {
                         icon: 'error',
                         title: 'Erro!',
                         // Previne o "Cannot read properties of undefined (reading 'message')" caso dê erro de rede/servidor
-                        text: xhr.responseJSON?.message || 'Ocorreu um erro inesperado.'
+                        text: xhr.responseJSON?.message || 'Ocorreu um erro inesperado.',
+                        showConfirmButton: false,
+                        timer: 2000
                     });
                 }
             },
@@ -139,10 +142,22 @@ $(document).ready(function() {
                     type: 'DELETE',
                     success: function(response) {
                         table.ajax.reload(null, false);
-                        swalDark.fire('Excluído!', response.message, 'success');
+                        swalDark.fire({
+                            title: 'Excluído!',
+                            text: response.message,
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
                     },
                     error: function(xhr) {
-                        swalDark.fire('Erro!', xhr.responseJSON?.message || 'Erro ao excluir.', 'error');
+                        swalDark.fire({
+                            title: 'Erro!',
+                            text: xhr.responseJSON?.message || 'Erro ao excluir.',
+                            icon: 'error',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
                     }
                 });
             }

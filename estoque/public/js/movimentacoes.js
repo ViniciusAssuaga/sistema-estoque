@@ -139,12 +139,12 @@ $(document).ready(function() {
         e.preventDefault();
 
         if (!$('#produto_id').val()) {
-            Swal.fire({
+            window.swalPadrao.fire({
                 icon: 'warning',
                 title: 'Atenção',
                 text: 'Selecione um produto válido da lista.',
-                background: '#1E1E1E',
-                color: '#E0E0E0'
+                showConfirmButton: false,
+                timer: 2000
             });
             return;
         }
@@ -165,14 +165,12 @@ $(document).ready(function() {
                 $btn.prop('disabled', false).text(textoOriginal);
                 tabelaMovimentacoes.ajax.reload(null, false);
 
-                Swal.fire({
+                window.swalPadrao.fire({
                     icon: 'success',
                     title: 'Sucesso!',
                     text: response.message,
                     timer: 2000,
-                    showConfirmButton: false,
-                    background: '#1E1E1E',
-                    color: '#E0E0E0'
+                    showConfirmButton: false
                 });
             },
             error: function(xhr) {
@@ -186,12 +184,12 @@ $(document).ready(function() {
                     });
                     $('#alertErros').removeClass('d-none');
                 } else {
-                    Swal.fire({
+                    window.swalPadrao.fire({
                         icon: 'error',
                         title: 'Erro!',
                         text: xhr.responseJSON?.message || 'Ocorreu um erro ao processar a movimentação.',
-                        background: '#1E1E1E',
-                        color: '#E0E0E0'
+                        showConfirmButton: false,
+                        timer: 2000
                     });
                 }
             }

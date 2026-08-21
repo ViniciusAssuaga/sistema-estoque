@@ -69,14 +69,12 @@ $(document).ready(function() {
                 $btn.prop('disabled', false).text(textoOriginal);
                 tabelaFornecedores.ajax.reload(null, false);
 
-                Swal.fire({
+                window.swalPadrao.fire({
                     icon: 'success',
                     title: 'Sucesso!',
                     text: response.message,
                     timer: 2000,
                     showConfirmButton: false,
-                    background: '#1E1E1E',
-                    color: '#E0E0E0'
                 });
             },
             error: function(xhr) {
@@ -91,12 +89,12 @@ $(document).ready(function() {
                     });
                     $('#alertErros').removeClass('d-none');
                 } else {
-                    Swal.fire({
+                    window.swalPadrao.fire({
                         icon: 'error',
                         title: 'Erro!',
                         text: 'Ocorreu um erro ao processar a requisição.',
-                        background: '#1E1E1E',
-                        color: '#E0E0E0'
+                        showConfirmButton: false,
+                        timer: 2000
                     });
                 }
             }
@@ -129,7 +127,7 @@ $(document).ready(function() {
     $(document).on('click', '.btn-excluir', function() {
         const id = $(this).data('id');
 
-        Swal.fire({
+        window.swalPadrao.fire({
             title: 'Excluir Fornecedor?',
             text: "Esta ação não poderá ser desfeita!",
             icon: 'warning',
@@ -137,9 +135,7 @@ $(document).ready(function() {
             confirmButtonColor: '#D63327',
             cancelButtonColor: '#333333',
             confirmButtonText: 'Sim, excluir',
-            cancelButtonText: 'Cancelar',
-            background: '#1E1E1E',
-            color: '#E0E0E0'
+            cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
@@ -148,23 +144,21 @@ $(document).ready(function() {
                     success: function(response) {
                         tabelaFornecedores.ajax.reload(null, false);
 
-                        Swal.fire({
+                        window.swalPadrao.fire({
                             icon: 'success',
                             title: 'Excluído!',
                             text: response.message,
                             timer: 2000,
-                            showConfirmButton: false,
-                            background: '#1E1E1E',
-                            color: '#E0E0E0'
+                            showConfirmButton: false
                         });
                     },
                     error: function() {
-                        Swal.fire({
+                        window.swalPadrao.fire({
                             icon: 'error',
                             title: 'Erro!',
                             text: 'Não foi possível excluir o fornecedor.',
-                            background: '#1E1E1E',
-                            color: '#E0E0E0'
+                            showConfirmButton: false,
+                            timer: 2000
                         });
                     }
                 });
