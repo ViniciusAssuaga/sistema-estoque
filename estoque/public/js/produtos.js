@@ -213,6 +213,10 @@ $(document).ready(function() {
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
+                const botaoConfirmar = Swal.getConfirmButton();
+                botaoConfirmar.disabled = true;
+                botaoConfirmar.textContent = 'Excluindo...';
+
                 $.ajax({
                     url: `/produtos/${id}`,
                     method: 'DELETE',
