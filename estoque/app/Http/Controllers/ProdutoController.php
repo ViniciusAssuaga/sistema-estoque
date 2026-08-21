@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Exception;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -137,8 +138,10 @@ class ProdutoController extends Controller
     public function destroy($id): JsonResponse
     {
         try {
-            $produto = Produto::findOrFail($id);
-            $produto->update(['ativo' => false]);
+            DB::transaction(function () use ($id) {
+                $produto = Produto::withTrashed()->findOrFail($id);
+                $produto->forceDelete();
+            });
 
             return response()->json([
                 'success' => true,
