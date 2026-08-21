@@ -75,13 +75,7 @@ $(document).ready(function() {
             success: function(response) {
                 $('#modalCategoria').modal('hide');
                 table.ajax.reload(null, false);
-                swalDark.fire({
-                    icon: 'success',
-                    title: 'Sucesso!',
-                    text: response.message,
-                    timer: 2000,
-                    showConfirmButton: false
-                });
+                swalDark.fire('Sucesso!', response.message, 'success');
             },
             error: function(xhr) {
                 if (xhr.status === 422) {
@@ -145,13 +139,7 @@ $(document).ready(function() {
                     type: 'DELETE',
                     success: function(response) {
                         table.ajax.reload(null, false);
-                        swalDark.fire({
-                            title: 'Excluído!',
-                            text: response.message,
-                            icon: 'success',
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
+                        swalDark.fire('Excluído!', response.message, 'success');
                     },
                     error: function(xhr) {
                         swalDark.fire('Erro!', xhr.responseJSON?.message || 'Erro ao excluir.', 'error');
