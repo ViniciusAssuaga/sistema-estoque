@@ -123,9 +123,21 @@ class DashboardController extends Controller
     {
         $driver = DB::connection()->getDriverName();
         $expressao = match ($periodo) {
-            'diario' => $driver === 'pgsql' ? "TO_CHAR(created_at, 'YYYY-MM-DD')" : "strftime('%Y-%m-%d', created_at)",
-            'mensal' => $driver === 'pgsql' ? "TO_CHAR(created_at, 'YYYY-MM')" : "strftime('%Y-%m', created_at)",
-            default => $driver === 'pgsql' ? "TO_CHAR(created_at, 'YYYY')" : "strftime('%Y', created_at)",
+            'diario' => match ($driver) {
+                'pgsql' => "TO_CHAR(created_at, 'YYYY-MM-DD')",
+                'mysql' => "DATE_FORMAT(created_at, '%Y-%m-%d')",
+                default => "strftime('%Y-%m-%d', created_at)",
+            },
+            'mensal' => match ($driver) {
+                'pgsql' => "TO_CHAR(created_at, 'YYYY-MM')",
+                'mysql' => "DATE_FORMAT(created_at, '%Y-%m')",
+                default => "strftime('%Y-%m', created_at)",
+            },
+            default => match ($driver) {
+                'pgsql' => "TO_CHAR(created_at, 'YYYY')",
+                'mysql' => "DATE_FORMAT(created_at, '%Y')",
+                default => "strftime('%Y', created_at)",
+            },
         };
 
         return Movimentacao::query()
