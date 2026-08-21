@@ -53,7 +53,7 @@ class ProdutoController extends Controller
                             <button class="btn btn-sm btn-outline-laravel btn-editar" data-id="' . $row->id . '" title="Editar Produto">
                                 <i class="bi bi-pencil-square"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-danger btn-excluir" data-id="' . $row->id . '" title="Excluir Produto">
+                            <button class="btn btn-sm btn-outline-laravel btn-excluir" data-id="' . $row->id . '" title="Excluir Produto">
                                 <i class="bi bi-trash3-fill"></i>
                             </button>
                         </div>

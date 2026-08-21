@@ -22,7 +22,7 @@ class FornecedorApiController extends Controller
                         <button type="button" class="btn btn-sm btn-outline-laravel py-0 px-2 btn-editar" data-id="'.$row->id.'" title="Editar Fornecedor">
                             <i class="bi bi-pencil-square"></i>
                         </button>
-                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 btn-excluir" data-id="'.$row->id.'" title="Excluir Fornecedor">
+                        <button type="button" class="btn btn-sm btn-outline-laravel py-0 px-2 btn-excluir" data-id="'.$row->id.'" title="Excluir Fornecedor">
                             <i class="bi bi-trash"></i>
                         </button>
                     ';

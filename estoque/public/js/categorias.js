@@ -32,7 +32,8 @@ $(document).ready(function() {
                         return $acoes.html();
                     }
                 }
-            ]
+            ],
+            order: [[1, 'asc']]
         })
     );
 

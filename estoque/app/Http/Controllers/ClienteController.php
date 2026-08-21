@@ -24,7 +24,7 @@ class ClienteController extends Controller
                         <button type="button" class="btn btn-sm btn-outline-laravel py-0 px-2 btn-editar" data-id="'.$row->id.'" title="Editar Cliente">
                             <i class="bi bi-pencil-square"></i>
                         </button>
-                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 btn-excluir" data-id="'.$row->id.'" title="Excluir Cliente">
+                        <button type="button" class="btn btn-sm btn-outline-laravel py-0 px-2 btn-excluir" data-id="'.$row->id.'" title="Excluir Cliente">
                             <i class="bi bi-trash"></i>
                         </button>
                     ';
