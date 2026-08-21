@@ -62,6 +62,8 @@ class ClienteController extends Controller
      */
     public function store(Request $request)
     {
+        abort_unless($request->user()->canCreateRecords(), 403);
+
         // 1. Validação de formulário
         $validator = Validator::make($request->all(), [
             'nome'     => 'required|string|max:255',
@@ -102,6 +104,8 @@ class ClienteController extends Controller
      */
     public function update(Request $request, $id)
     {
+        abort_unless($request->user()->canEditRecords(), 403);
+
         // 1. Validação de formulário
         $validator = Validator::make($request->all(), [
             'nome'     => 'required|string|max:255',
@@ -147,6 +151,8 @@ class ClienteController extends Controller
      */
     public function destroy($id)
     {
+        abort_unless(request()->user()->canDeleteRecords(), 403);
+
         try {
             $cliente = Cliente::findOrFail($id);
             $cliente->delete();

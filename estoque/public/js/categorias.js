@@ -15,7 +15,15 @@ $(document).ready(function() {
                 { data: 'id', name: 'id' },
                 { data: 'nome', name: 'nome' },
                 { data: 'descricao', name: 'descricao', defaultContent: '-' },
-                { data: 'acoes', name: 'acoes', orderable: false, searchable: false, className: 'text-center' }
+                {
+                    data: 'acoes', name: 'acoes', orderable: false, searchable: false, className: 'text-center',
+                    render: function(data) {
+                        const $acoes = $('<div>').html(data || '');
+                        if (!window.userPermissions.canEdit) $acoes.find('.btn-editar').remove();
+                        if (!window.userPermissions.canDelete) $acoes.find('.btn-excluir').remove();
+                        return $acoes.html();
+                    }
+                }
             ]
         })
     );

@@ -14,9 +14,11 @@
             <h1 class="h3 fw-bold mb-0">Gerenciamento de <span class="text-laravel">Movimentações</span></h1>
             <small class="text-secondary">Controle de Entradas e Saídas via API REST</small>
         </div>
-        <button class="btn btn-laravel px-4 py-2" id="btnNovaMovimentacao">
-            + Nova Movimentação
-        </button>
+        @if(auth()->user()->canCreateRecords())
+            <button class="btn btn-laravel px-4 py-2" id="btnNovaMovimentacao">
+                + Nova Movimentação
+            </button>
+        @endif
     </div>
 
     <!-- TABELA -->

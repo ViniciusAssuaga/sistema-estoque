@@ -14,9 +14,11 @@
             <h1 class="h3 fw-bold mb-0">Gerenciamento de <span class="text-laravel">Categorias</span></h1>
             <small class="text-secondary">Painel de Categorias via API REST</small>
         </div>
-        <button class="btn btn-laravel px-4 py-2" id="btnNovaCategoria">
-            + Nova Categoria
-        </button>
+        @if(auth()->user()->canCreateRecords())
+            <button class="btn btn-laravel px-4 py-2" id="btnNovaCategoria">
+                + Nova Categoria
+            </button>
+        @endif
     </div>
 
     <!-- TABELA -->
@@ -85,5 +87,5 @@
         };
     </script>
     <script src="{{ asset('js/datatables-defaults.js') }}"></script>
-    <script src="{{ asset('js/categorias.js') }}"></script>
+    <script src="{{ asset('js/categorias.js') }}?v={{ time() }}"></script>
 @endpush

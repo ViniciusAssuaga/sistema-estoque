@@ -15,7 +15,15 @@ $(document).ready(function() {
             { data: 'cnpj', name: 'cnpj' },
             { data: 'email', name: 'email', defaultContent: '-' },
             { data: 'telefone', name: 'telefone', defaultContent: '-' },
-            { data: 'acoes', name: 'acoes', orderable: false, searchable: false }
+            {
+                data: 'acoes', name: 'acoes', orderable: false, searchable: false,
+                render: function(data) {
+                    const $acoes = $('<div>').html(data || '');
+                    if (!window.userPermissions.canEdit) $acoes.find('.btn-editar').remove();
+                    if (!window.userPermissions.canDelete) $acoes.find('.btn-excluir').remove();
+                    return $acoes.html();
+                }
+            }
         ],
         order: [[0, 'asc']]
     }));

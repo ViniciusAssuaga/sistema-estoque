@@ -14,9 +14,11 @@
             <h1 class="h3 fw-bold mb-0">Gerenciamento de <span class="text-laravel">Fornecedores</span></h1>
             <small class="text-secondary">Painel de Fornecedores via API REST</small>
         </div>
-        <button class="btn btn-laravel px-4 py-2" id="btnNovoFornecedor">
-            + Novo Fornecedor
-        </button>
+        @if(auth()->user()->canCreateRecords())
+            <button class="btn btn-laravel px-4 py-2" id="btnNovoFornecedor">
+                + Novo Fornecedor
+            </button>
+        @endif
     </div>
 
     <!-- TABELA -->
@@ -99,5 +101,5 @@
     </script>
     <!-- Substituídos os assets com URL absoluta por caminhos relativos -->
     <script src="/js/datatables-defaults.js"></script>
-    <script src="/js/fornecedores.js"></script>
+    <script src="/js/fornecedores.js?v={{ time() }}"></script>
 @endpush
