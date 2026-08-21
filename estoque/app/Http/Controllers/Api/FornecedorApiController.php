@@ -38,6 +38,8 @@ class FornecedorApiController extends Controller
     // POST /api/fornecedores
     public function store(Request $request)
     {
+        abort_unless($request->user()->canCreateRecords(), 403);
+
         $request->validate([
             'razao_social'  => 'required|string|max:255',
             'nome_fantasia' => 'nullable|string|max:255',
@@ -64,6 +66,8 @@ class FornecedorApiController extends Controller
     // PUT /api/fornecedores/{id}
     public function update(Request $request, $id)
     {
+        abort_unless($request->user()->canEditRecords(), 403);
+
         $request->validate([
             'razao_social'  => 'required|string|max:255',
             'nome_fantasia' => 'nullable|string|max:255',
@@ -83,6 +87,8 @@ class FornecedorApiController extends Controller
     // DELETE /api/fornecedores/{id}
     public function destroy($id)
     {
+        abort_unless(request()->user()->canDeleteRecords(), 403);
+
         $fornecedor = Fornecedor::findOrFail($id);
         $fornecedor->delete();
 

@@ -40,62 +40,61 @@ class DashboardController extends Controller
         $diasLabels = [];
         $dadosEntradas = [];
         $dadosSaidas = [];
+        $hoje = Carbon::today();
+        $totaisDiarios = $this->totaisMovimentacoesPorPeriodo(
+            $hoje->copy()->subDays(6)->startOfDay(),
+            $hoje->copy()->endOfDay(),
+            'diario'
+        );
 
         for ($i = 6; $i >= 0; $i--) {
-            $data = Carbon::today()->subDays($i);
+            $data = $hoje->copy()->subDays($i);
+            $totais = $totaisDiarios[$data->format('Y-m-d')] ?? [];
             $diasLabels[] = ucfirst($data->translatedFormat('D'));
-
-            $dadosEntradas[] = (int) Movimentacao::whereDate('created_at', $data)
-                ->where('tipo', 'entrada')
-                ->sum('quantidade');
-
-            $dadosSaidas[] = (int) Movimentacao::whereDate('created_at', $data)
-                ->where('tipo', 'saida')
-                ->sum('quantidade');
+            $dadosEntradas[] = (int) ($totais['entrada'] ?? 0);
+            $dadosSaidas[] = (int) ($totais['saida'] ?? 0);
         }
 
         // 4. Gráfico de Movimentações (Últimos 12 Meses - Mensal)
         $mesesLabels = [];
         $dadosEntradasMensal = [];
         $dadosSaidasMensal = [];
+        $totaisMensais = $this->totaisMovimentacoesPorPeriodo(
+            Carbon::now()->subMonths(11)->startOfMonth(),
+            Carbon::now()->endOfMonth(),
+            'mensal'
+        );
 
         for ($i = 11; $i >= 0; $i--) {
             $mes = Carbon::now()->subMonths($i);
+            $totais = $totaisMensais[$mes->format('Y-m')] ?? [];
             $mesesLabels[] = ucfirst($mes->translatedFormat('M/Y'));
-
-            $dadosEntradasMensal[] = (int) Movimentacao::whereYear('created_at', $mes->year)
-                ->whereMonth('created_at', $mes->month)
-                ->where('tipo', 'entrada')
-                ->sum('quantidade');
-
-            $dadosSaidasMensal[] = (int) Movimentacao::whereYear('created_at', $mes->year)
-                ->whereMonth('created_at', $mes->month)
-                ->where('tipo', 'saida')
-                ->sum('quantidade');
+            $dadosEntradasMensal[] = (int) ($totais['entrada'] ?? 0);
+            $dadosSaidasMensal[] = (int) ($totais['saida'] ?? 0);
         }
 
         // 5. Gráfico de Movimentações (Últimos 5 Anos - Anual)
         $anosLabels = [];
         $dadosEntradasAnual = [];
         $dadosSaidasAnual = [];
+        $totaisAnuais = $this->totaisMovimentacoesPorPeriodo(
+            Carbon::now()->subYears(4)->startOfYear(),
+            Carbon::now()->endOfYear(),
+            'anual'
+        );
 
         for ($i = 4; $i >= 0; $i--) {
             $ano = Carbon::now()->subYears($i)->year;
+            $totais = $totaisAnuais[(string) $ano] ?? [];
             $anosLabels[] = (string) $ano;
-
-            $dadosEntradasAnual[] = (int) Movimentacao::whereYear('created_at', $ano)
-                ->where('tipo', 'entrada')
-                ->sum('quantidade');
-
-            $dadosSaidasAnual[] = (int) Movimentacao::whereYear('created_at', $ano)
-                ->where('tipo', 'saida')
-                ->sum('quantidade');
+            $dadosEntradasAnual[] = (int) ($totais['entrada'] ?? 0);
+            $dadosSaidasAnual[] = (int) ($totais['saida'] ?? 0);
         }
 
         // 6. Gráfico de Categorias Populares
         $categorias = Categoria::withCount(['produtos' => function ($query) {
             $query->where('ativo', true);
-        }])->take(5)->get();
+        }])->orderByDesc('produtos_count')->take(5)->get();
         $categoriasLabels = $categorias->pluck('nome')->values();
         $categoriasTotais = $categorias->pluck('produtos_count')->values();
 
@@ -118,5 +117,24 @@ class DashboardController extends Controller
             'categoriasLabels',
             'categoriasTotais'
         ));
+    }
+
+    private function totaisMovimentacoesPorPeriodo(Carbon $inicio, Carbon $fim, string $periodo): array
+    {
+        $driver = DB::connection()->getDriverName();
+        $expressao = match ($periodo) {
+            'diario' => $driver === 'pgsql' ? "TO_CHAR(created_at, 'YYYY-MM-DD')" : "strftime('%Y-%m-%d', created_at)",
+            'mensal' => $driver === 'pgsql' ? "TO_CHAR(created_at, 'YYYY-MM')" : "strftime('%Y-%m', created_at)",
+            default => $driver === 'pgsql' ? "TO_CHAR(created_at, 'YYYY')" : "strftime('%Y', created_at)",
+        };
+
+        return Movimentacao::query()
+            ->selectRaw("{$expressao} as periodo, tipo, SUM(quantidade) as total")
+            ->whereBetween('created_at', [$inicio, $fim])
+            ->groupByRaw("{$expressao}, tipo")
+            ->get()
+            ->groupBy('periodo')
+            ->map(fn ($totais) => $totais->pluck('total', 'tipo')->all())
+            ->all();
     }
 }

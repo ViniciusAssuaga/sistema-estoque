@@ -6,6 +6,7 @@
 app = 'estoque'
 primary_region = 'gru'
 console_command = 'php /var/www/html/artisan tinker'
+release_command = 'php /var/www/html/artisan migrate --force'
 
 [build]
   [build.args]

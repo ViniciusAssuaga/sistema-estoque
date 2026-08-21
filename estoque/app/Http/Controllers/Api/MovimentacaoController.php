@@ -10,17 +10,21 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Throwable;
+use Yajra\DataTables\Facades\DataTables;
 
 class MovimentacaoController extends Controller
 {
     public function index()
     {
-        $movimentacoes = Movimentacao::with('produto')->latest()->get();
-        return response()->json($movimentacoes, 200);
+        return DataTables::eloquent(Movimentacao::with('produto')->latest())
+            ->addColumn('produto_nome', fn (Movimentacao $movimentacao) => $movimentacao->produto?->nome ?? 'Produto removido')
+            ->toJson();
     }
 
     public function store(Request $request)
     {
+        abort_unless($request->user()->canCreateRecords(), 403);
+
         if ($request->has('tipo')) {
             $tipo = mb_strtolower(trim($request->tipo), 'UTF-8');
 

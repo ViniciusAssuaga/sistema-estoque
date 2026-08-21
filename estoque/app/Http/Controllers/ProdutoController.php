@@ -178,12 +178,17 @@ class ProdutoController extends Controller
         return (float) $valorLimpo;
     }
 
-    public function listarJson()
+    public function listarJson(Request $request)
     {
-        // Retorna apenas os campos necessários para o autocomplete
+        $termo = trim((string) $request->query('q', ''));
+
         $produtos = Produto::where('ativo', true)
+            ->when($termo !== '', fn ($query) => $query->where('nome', 'like', "%{$termo}%"))
             ->select('id', 'nome', 'quantidade_estoque')
+            ->orderBy('nome')
+            ->limit(20)
             ->get();
+
         return response()->json($produtos);
     }
 }

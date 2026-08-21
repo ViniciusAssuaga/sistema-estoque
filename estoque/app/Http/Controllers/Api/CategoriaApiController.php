@@ -41,6 +41,8 @@ class CategoriaApiController extends Controller
     // POST /api/categorias (Criar)
     public function store(Request $request)
     {
+        abort_unless($request->user()->canCreateRecords(), 403);
+
         $validator = Validator::make($request->all(), [
             'nome'      => 'required|string|max:255|unique:categorias,nome',
             'descricao' => 'nullable|string|max:500',
@@ -88,6 +90,8 @@ class CategoriaApiController extends Controller
     // PUT /api/categorias/{id} (Atualizar)
     public function update(Request $request, $id)
     {
+        abort_unless($request->user()->canEditRecords(), 403);
+
         $validator = Validator::make($request->all(), [
             'nome'      => ['required', 'string', 'max:255', Rule::unique('categorias', 'nome')->ignore($id)],
             'descricao' => 'nullable|string|max:500',
@@ -125,6 +129,8 @@ class CategoriaApiController extends Controller
     // DELETE /api/categorias/{id} (Excluir)
     public function destroy($id)
     {
+        abort_unless(request()->user()->canDeleteRecords(), 403);
+
         try {
             $categoria = Categoria::findOrFail($id);
             $categoria->delete();

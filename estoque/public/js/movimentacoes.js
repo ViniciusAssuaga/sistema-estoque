@@ -8,10 +8,9 @@ $(document).ready(function() {
     // 1. Inicializa a Tabela
     const tabelaMovimentacoes = $('#tabela-movimentacoes').DataTable(window.getDataTableDefaults({
         processing: true,
-        serverSide: false,
+        serverSide: true,
         ajax: {
             url: window.routes.movimentacoesIndex,
-            dataSrc: '' // Informa que o JSON retornado é um array direto
         },
         columns: [
             { 
@@ -50,7 +49,7 @@ $(document).ready(function() {
                     });
                 }
             },
-            { data: 'produto.nome', name: 'produto.nome' },
+            { data: 'produto_nome', name: 'produto_nome' },
             { 
                 data: 'tipo', 
                 name: 'tipo',
@@ -66,19 +65,7 @@ $(document).ready(function() {
         order: [[1, 'desc']]
     }));
 
-    // Cache de produtos para evitar requisições excessivas
-    let produtosCache = [];
-
-    function carregarProdutosCache() {
-        $.get(window.routes.produtosListarJson, function(data) {
-            produtosCache = data;
-        }).fail(function() {
-            console.error('Erro ao carregar produtos do servidor (Server-Side)');
-        });
-    }
-
-    // Carrega o cache ao iniciar a página
-    carregarProdutosCache();
+    let buscaProdutosTimeout;
 
     // 2. Botão Nova Movimentação
     $('#btnNovaMovimentacao').on('click', function() {
@@ -87,7 +74,6 @@ $(document).ready(function() {
         $('#alertErros').addClass('d-none');
         $('#listaErros').empty();
         $('#lista-sugestoes').hide();
-        carregarProdutosCache(); 
         $('#modalMovimentacao').modal('show');
     });
 
@@ -102,22 +88,28 @@ $(document).ready(function() {
             return;
         }
 
-        const filtrados = produtosCache.filter(p => p.nome.toLowerCase().includes(termo));
+        clearTimeout(buscaProdutosTimeout);
+        buscaProdutosTimeout = setTimeout(function() {
+            $.get(window.routes.produtosListarJson, { q: termo }, function(produtos) {
+                $sugestoes.empty();
+                if (produtos.length === 0) {
+                    $sugestoes.text('Nenhum produto encontrado');
+                    $sugestoes.show();
+                    return;
+                }
 
-        $sugestoes.empty();
-        if (filtrados.length > 0) {
-            filtrados.forEach(produto => {
-                $sugestoes.append(`
-                    <button type="button" class="list-group-item list-group-item-action bg-dark text-white border-secondary item-produto" data-id="${produto.id}" data-nome="${produto.nome}">
-                        ${produto.nome} <small class="text-muted">(Estoque: ${produto.quantidade_estoque})</small>
-                    </button>
-                `);
+                produtos.forEach(function(produto) {
+                    const $item = $('<button>', {
+                        type: 'button',
+                        class: 'list-group-item list-group-item-action bg-dark text-white border-secondary item-produto'
+                    }).attr({ 'data-id': produto.id, 'data-nome': produto.nome });
+                    $item.append($('<span>').text(produto.nome));
+                    $item.append($('<small>', { class: 'text-muted' }).text(` (Estoque: ${produto.quantidade_estoque})`));
+                    $sugestoes.append($item);
+                });
+                $sugestoes.show();
             });
-            $sugestoes.show();
-        } else {
-            $sugestoes.append('<div class="list-group-item bg-dark text-muted border-secondary">Nenhum produto encontrado</div>');
-            $sugestoes.show();
-        }
+        }, 250);
     });
 
     $(document).on('click', '.item-produto', function() {
