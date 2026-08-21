@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Produto;
 use App\Models\Categoria; // <-- 1. Importar a model de Categoria
+use App\Http\Requests\StoreProdutoRequest;
+use App\Http\Requests\UpdateProdutoRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -69,29 +71,10 @@ class ProdutoController extends Controller
         return redirect()->route('produtos.index');
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreProdutoRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'sku'                  => 'required|string|max:50|unique:produtos,sku',
-            'nome'                 => 'required|string|max:255',
-            'categoria_id'         => 'required|exists:categorias,id', // <-- Validação da categoria
-            'preco_custo'          => 'required|string',
-            'preco_venda'          => 'required|string',
-            'quantidade_estoque' => 'required|integer|min:0',
-            'estoque_minimo'     => 'nullable|integer|min:0',
-            'descricao'          => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         try {
-            $data = $validator->validated();
-            $data['preco_custo'] = $this->converterPrecoParaFloat($data['preco_custo']);
-            $data['preco_venda'] = $this->converterPrecoParaFloat($data['preco_venda']);
+            $data = $request->validated();
             $data['ativo']       = $request->has('ativo');
 
             $produto = Produto::create($data);
@@ -119,31 +102,12 @@ class ProdutoController extends Controller
         return response()->json($produto);
     }
 
-    public function update(Request $request, $id): JsonResponse
+    public function update(UpdateProdutoRequest $request, $id): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'sku'                  => ['required', 'string', 'max:50', Rule::unique('produtos', 'sku')->ignore($id)],
-            'nome'                 => 'required|string|max:255',
-            'categoria_id'         => 'required|exists:categorias,id', // <-- Validação da categoria
-            'preco_custo'          => 'required|string',
-            'preco_venda'          => 'required|string',
-            'quantidade_estoque' => 'required|integer|min:0',
-            'estoque_minimo'     => 'nullable|integer|min:0',
-            'descricao'          => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         try {
             $produto = Produto::findOrFail($id);
 
-            $data = $validator->validated();
-            $data['preco_custo'] = $this->converterPrecoParaFloat($data['preco_custo']);
-            $data['preco_venda'] = $this->converterPrecoParaFloat($data['preco_venda']);
+            $data = $request->validated();
             $data['ativo']       = $request->has('ativo');
 
             $produto->update($data);
@@ -174,7 +138,7 @@ class ProdutoController extends Controller
     {
         try {
             $produto = Produto::findOrFail($id);
-            $produto->delete();
+            $produto->update(['ativo' => false]);
 
             return response()->json([
                 'success' => true,
@@ -208,7 +172,9 @@ class ProdutoController extends Controller
     public function listarJson()
     {
         // Retorna apenas os campos necessários para o autocomplete
-        $produtos = Produto::select('id', 'nome', 'quantidade_estoque')->get();
+        $produtos = Produto::where('ativo', true)
+            ->select('id', 'nome', 'quantidade_estoque')
+            ->get();
         return response()->json($produtos);
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Movimentacao;
 use App\Models\Produto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Throwable;
 
@@ -26,7 +27,7 @@ class MovimentacaoController extends Controller
         }
 
         $validated = $request->validate([
-            'produto_id' => 'required|exists:produtos,id',
+            'produto_id' => 'required|exists:produtos,id,ativo,1',
             'tipo'       => 'required|in:entrada,saida,Saída,Entrada',
             'quantidade' => 'required|integer|min:1',
             'observacao' => 'nullable|string|max:255'
@@ -36,25 +37,26 @@ class MovimentacaoController extends Controller
         $validated['tipo'] = $tipoNormalizado;
 
         try {
-            // 1. Busca o produto via Eloquent
-            $produto = Produto::where('id', $validated['produto_id'])->firstOrFail();
+            $movimentacao = DB::transaction(function () use ($validated, $tipoNormalizado) {
+                $produto = Produto::where('id', $validated['produto_id'])
+                    ->where('ativo', true)
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-            // 2. Valida estoque antes de qualquer alteração no banco
-            if ($tipoNormalizado === 'saida') {
-                if ($produto->quantidade_estoque < $validated['quantidade']) {
-                    throw new \Exception("Estoque insuficiente para esta saída. Estoque atual: {$produto->quantidade_estoque}");
+                if ($tipoNormalizado === 'saida') {
+                    if ($produto->quantidade_estoque < $validated['quantidade']) {
+                        throw new \Exception("Estoque insuficiente para esta saída. Estoque atual: {$produto->quantidade_estoque}");
+                    }
+                    $produto->quantidade_estoque -= $validated['quantidade'];
+                } else {
+                    $produto->quantidade_estoque += $validated['quantidade'];
                 }
-                $produto->quantidade_estoque -= $validated['quantidade'];
-            } else {
-                $produto->quantidade_estoque += $validated['quantidade'];
-            }
 
-            // 3. Atualiza timestamps usando Carbon para o Postgres colocar aspas na data
-            $produto->updated_at = Carbon::now();
-            $produto->save();
+                $produto->updated_at = Carbon::now();
+                $produto->save();
 
-            // 4. Salva a movimentação
-            $movimentacao = Movimentacao::create($validated);
+                return Movimentacao::create($validated);
+            });
 
             return response()->json([
                 'success' => true,

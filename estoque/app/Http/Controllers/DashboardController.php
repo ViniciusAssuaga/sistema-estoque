@@ -14,20 +14,24 @@ class DashboardController extends Controller
     public function index()
     {
         // 1. KPIs dos Cards Superiores
-        $totalProdutos = Produto::count();
+        $totalProdutos = Produto::where('ativo', true)->count();
         
         // Valor total em estoque calculado direto na Query do banco de dados
-        $valorTotalEstoque = Produto::selectRaw('SUM(preco_custo * quantidade_estoque) as total')
+        $valorTotalEstoque = Produto::where('ativo', true)
+            ->selectRaw('SUM(preco_custo * quantidade_estoque) as total')
             ->value('total') ?? 0;
 
-        $totalEstoqueBaixo = Produto::whereColumn('quantidade_estoque', '<=', 'estoque_minimo')->count();
+        $totalEstoqueBaixo = Produto::where('ativo', true)
+            ->whereColumn('quantidade_estoque', '<=', 'estoque_minimo')
+            ->count();
         
         $movimentacoesHoje = Movimentacao::whereDate('created_at', Carbon::today())->count();
 
         // 2. Tabelas Inferiores
         $ultimasMovimentacoes = Movimentacao::with('produto')->latest()->take(5)->get();
         
-        $produtosEstoqueBaixo = Produto::whereColumn('quantidade_estoque', '<=', 'estoque_minimo')
+        $produtosEstoqueBaixo = Produto::where('ativo', true)
+            ->whereColumn('quantidade_estoque', '<=', 'estoque_minimo')
             ->orderByRaw('(estoque_minimo - quantidade_estoque) DESC')
             ->take(5)
             ->get();
@@ -89,7 +93,9 @@ class DashboardController extends Controller
         }
 
         // 6. Gráfico de Categorias Populares
-        $categorias = Categoria::withCount('produtos')->take(5)->get();
+        $categorias = Categoria::withCount(['produtos' => function ($query) {
+            $query->where('ativo', true);
+        }])->take(5)->get();
         $categoriasLabels = $categorias->pluck('nome')->values();
         $categoriasTotais = $categorias->pluck('produtos_count')->values();
 

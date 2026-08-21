@@ -25,11 +25,13 @@ class StoreProdutoRequest extends FormRequest
         return [
             'sku' => 'required|string|max:100|unique:produtos,sku',
             'nome' => 'required|string|max:255',
-            'preco_custo' => 'required|numeric|min:0',
-            'preco_venda' => 'required|numeric|min:0',
+            'categoria_id' => 'required|exists:categorias,id',
+            'preco_custo' => 'required|numeric|min:0|max:99999999.99',
+            'preco_venda' => 'required|numeric|min:0|max:99999999.99',
             'quantidade_estoque' => 'required|integer|min:0',
             'estoque_minimo' => 'nullable|integer|min:0',
             'descricao' => 'nullable|string',
+            'ativo' => 'nullable|boolean',
         ];
     }
 
@@ -39,7 +41,16 @@ class StoreProdutoRequest extends FormRequest
             return $valor;
         }
 
-        $valorLimpo = str_replace('.', '', $valor);
-        return (float) str_replace(',', '.', $valorLimpo);
+        $valor = trim($valor);
+
+        if (preg_match('/^\d{1,3}(\.\d{3})+,\d{1,2}$/', $valor)) {
+            return (float) str_replace(',', '.', str_replace('.', '', $valor));
+        }
+
+        if (preg_match('/^\d+,\d{1,2}$/', $valor)) {
+            return (float) str_replace(',', '.', $valor);
+        }
+
+        return $valor;
     }
 }

@@ -8,4 +8,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResource('fornecedores', FornecedorApiController::class)->names('api.fornecedores');
 Route::apiResource('categorias', CategoriaApiController::class)->names('api.categorias');
-Route::apiResource('movimentacoes', MovimentacaoController::class)->names('api.movimentacoes');
+Route::apiResource('movimentacoes', MovimentacaoController::class)
+	->only(['index', 'store'])
+	->names('api.movimentacoes');
