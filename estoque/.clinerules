@@ -1,0 +1,9 @@
+Contexto do Projeto: Sistema de Estoque
+Stack: Laravel 13, PHP 8.3, Banco MySQL (local) e PostgreSQL (online).
+Arquitetura: MVC Laravel padrão.
+Módulos e Fluxos:
+- Web (Blade): `routes/web.php/app/Http/Controllers/resources/views`. (Ex: Produtos, Clientes).
+- API (JSON): `routes/api.php/app/Http/Controllers/Api`. (Ex: Fornecedores, Categorias, Movimentações).
+- Banco de Dados: Migrations em `database/migrations`.
+- Auth: Laravel Breeze.
+- Tabelas: Yajra DataTables (Server-side). Objetivo: Gestão de produtos, controle de movimentações e cadastro de clientes/fornecedores.
