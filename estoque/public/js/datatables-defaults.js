@@ -7,7 +7,8 @@ window.getDataTableDefaults = function(customOptions = {}) {
              "<'row'<'col-sm-12'tr>>" +
              "<'row mt-3 align-items-center'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-flex justify-content-end'p>>",
         lengthMenu: [
-            [10, 20, 50, 100]
+            [10, 20, 50, 100, 1000, 20000],
+            [10, 20, 50, 100, 1000, 20000]
         ],
         language: {
             processing: '<div class="spinner-custom"></div>',
