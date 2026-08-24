@@ -8,10 +8,10 @@ done
 
 # Regra exclusiva para o ambiente de teste com SQLite
 if [ "$DB_CONNECTION" = "sqlite" ]; then
-    echo "Ambiente de teste detectado (SQLite). Criando banco..."
+    echo "Ambiente de teste detectado (SQLite). Garantindo estrutura do banco..."
     mkdir -p /var/www/html/database
     touch /var/www/html/database/database.sqlite
-    php artisan migrate:fresh --seed --force
+    php artisan migrate --force
 fi
 
 if [ $# -gt 0 ]; then
