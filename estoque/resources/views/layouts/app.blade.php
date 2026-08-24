@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-bs-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -76,11 +77,13 @@
                 display: flex;
                 flex-direction: column;
             }
+
             .sidebar-menu {
                 flex: 1;
                 display: flex;
                 flex-direction: column;
             }
+
             .user-section-container {
                 margin-top: auto !important;
             }
@@ -123,6 +126,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- NAVBAR SUPERIOR PARA DISPOSITIVOS MÓVEIS -->
@@ -216,22 +220,22 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
+        // SweetAlert Padrão
         window.swalPadrao = Swal.mixin({
             background: '#1E1E1E',
             color: '#E0E0E0'
         });
-    </script>
 
-    <script>
+        // Permissões do Usuário
         window.userPermissions = {
-            canCreate: @json(auth()->user()->canCreateRecords()),
-            canEdit: @json(auth()->user()->canEditRecords()),
-            canDelete: @json(auth()->user()->canDeleteRecords())
+            canCreate: "{{ auth()->user()?->canCreateRecords() ? 1 : 0 }}" === "1",
+            canEdit: "{{ auth()->user()?->canEditRecords() ? 1 : 0 }}" === "1",
+            canDelete: "{{ auth()->user()?->canDeleteRecords() ? 1 : 0 }}" === "1"
         };
-    </script>
 
-    <script>
+        // Lógica da Sidebar
         $(document).ready(function() {
             const $sidebar = $('#sidebar');
 
@@ -254,4 +258,5 @@
 
     @stack('scripts')
 </body>
+
 </html>
