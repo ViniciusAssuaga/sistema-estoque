@@ -16,7 +16,7 @@
 
     @stack('styles')
 
-    <!-- Asset Bundler Oficial do Laravel (Vite) alteração teste main -->
+    <!-- Asset Bundler Oficial do Laravel (Vite) -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
