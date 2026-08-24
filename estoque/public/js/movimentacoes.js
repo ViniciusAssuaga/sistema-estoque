@@ -39,10 +39,7 @@ $(document).ready(function () {
                         return data;
                     }
 
-                    // Normaliza para o formato ISO trocando o espaço por 'T' se necessário (compatibilidade MySQL vs PostgreSQL)
-                    const dataIso = data.includes('T') ? data : data.replace(' ', 'T');
-                    const dataObj = new Date(dataIso);
-
+                    const dataObj = new Date(data);
                     return dataObj.toLocaleString('pt-BR', {
                         day: '2-digit',
                         month: '2-digit',
@@ -98,7 +95,11 @@ $(document).ready(function () {
             $.get(window.routes.produtosListarJson, { q: termo }, function (produtos) {
                 $sugestoes.empty();
                 if (produtos.length === 0) {
-                    $sugestoes.text('Nenhum produto encontrado');
+                    const $itemVazio = $('<div>', {
+                        class: 'list-group-item bg-dark text-muted border-secondary disabled',
+                        text: 'Nenhum produto encontrado'
+                    });
+                    $sugestoes.append($itemVazio);
                     $sugestoes.show();
                     return;
                 }

@@ -8,6 +8,7 @@ use App\Models\Produto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 use Throwable;
 use Yajra\DataTables\Facades\DataTables;
@@ -17,7 +18,7 @@ class MovimentacaoController extends Controller
     public function index()
     {
         return DataTables::eloquent(Movimentacao::with('produto')->latest())
-            ->addColumn('produto_nome', fn (Movimentacao $movimentacao) => $movimentacao->produto?->nome ?? 'Produto removido')
+            ->addColumn('produto_nome', fn(Movimentacao $movimentacao) => $movimentacao->produto?->nome ?? 'Produto removido')
             ->toJson();
     }
 
@@ -52,7 +53,9 @@ class MovimentacaoController extends Controller
 
                 if ($tipoNormalizado === 'saida') {
                     if ($produto->quantidade_estoque < $validated['quantidade']) {
-                        throw new \DomainException("Estoque insuficiente para esta saída. Estoque atual: {$produto->quantidade_estoque}");
+                        throw ValidationException::withMessages([
+                            'quantidade' => ["Estoque insuficiente para esta saída. Estoque atual: {$produto->quantidade_estoque}"]
+                        ]);
                     }
                     $produto->quantidade_estoque -= $validated['quantidade'];
                 } else {
@@ -70,12 +73,8 @@ class MovimentacaoController extends Controller
                 'message' => 'Movimentação registrada com sucesso!',
                 'data'    => $movimentacao->load('produto')
             ], 201);
-
-        } catch (\DomainException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 422);
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (Throwable $e) {
             Log::error('Erro ao registrar movimentação.', [
                 'exception' => $e,
