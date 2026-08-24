@@ -21,14 +21,14 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-white antialiased bg-zinc-950">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-zinc-950">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-zinc-950 px-4">
             <div>
                 <a href="/">
                     <x-application-logo class="w-20 h-20 fill-current text-[#FF2D20]" />
                 </a>
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-6 bg-zinc-900 border border-zinc-800 shadow-2xl overflow-hidden sm:rounded-xl">
+            <div class="w-[95%] sm:max-w-md mt-6 px-6 py-6 bg-zinc-900 border border-zinc-800 shadow-2xl overflow-hidden rounded-xl">
                 {{ $slot }}
             </div>
         </div>
