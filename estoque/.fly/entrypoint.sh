@@ -6,6 +6,14 @@ for f in /var/www/html/.fly/scripts/*.sh; do
     bash "$f" -e
 done
 
+# Regra exclusiva para o ambiente de teste com SQLite
+if [ "$DB_CONNECTION" = "sqlite" ]; then
+    echo "Ambiente de teste detectado (SQLite). Criando banco..."
+    mkdir -p /var/www/html/database
+    touch /var/www/html/database/database.sqlite
+    php artisan migrate:fresh --seed --force
+fi
+
 if [ $# -gt 0 ]; then
     # If we passed a command, run it as root
     exec "$@"
