@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -11,38 +11,38 @@ $(document).ready(function() {
         serverSide: true,
         ajax: {
             url: window.routes.movimentacoesIndex,
-            error: function(xhr) {
+            error: function (xhr) {
                 if (xhr.status === 401 || xhr.status === 419) {
                     window.location.href = '/login';
                 }
             },
         },
         columns: [
-            { 
-                data: 'id', 
-                name: 'id', 
+            {
+                data: 'id',
+                name: 'id',
                 type: 'num',
-                render: function(data, type, row) {
+                render: function (data, type, row) {
                     if (type === 'sort' || type === 'type') {
                         return data;
                     }
                     return `#${data}`;
-                } 
+                }
             },
-            { 
+            {
                 data: 'created_at',
                 name: 'created_at',
-                render: function(data, type, row) {
+                render: function (data, type, row) {
                     if (!data) return '-';
 
-                    // Se for para ordenação, retorna a string pura do banco (formato ISO YYYY-MM-DD HH:mm:ss) 
-                    // que ordena cronologicamente de forma perfeita em texto numérico/alfanumérico.
                     if (type === 'sort' || type === 'type') {
                         return data;
                     }
 
-                    // Para exibição, formata no padrão brasileiro
-                    const dataObj = new Date(data);
+                    // Normaliza para o formato ISO trocando o espaço por 'T' se necessário (compatibilidade MySQL vs PostgreSQL)
+                    const dataIso = data.includes('T') ? data : data.replace(' ', 'T');
+                    const dataObj = new Date(dataIso);
+
                     return dataObj.toLocaleString('pt-BR', {
                         day: '2-digit',
                         month: '2-digit',
@@ -55,12 +55,12 @@ $(document).ready(function() {
                 }
             },
             { data: 'produto_nome', name: 'produto_nome' },
-            { 
-                data: 'tipo', 
+            {
+                data: 'tipo',
                 name: 'tipo',
-                render: function(data) {
-                    return data === 'entrada' ? 
-                        '<span class="badge bg-success">Entrada</span>' : 
+                render: function (data) {
+                    return data === 'entrada' ?
+                        '<span class="badge bg-success">Entrada</span>' :
                         '<span class="badge bg-danger">Saída</span>';
                 }
             },
@@ -73,7 +73,7 @@ $(document).ready(function() {
     let buscaProdutosTimeout;
 
     // 2. Botão Nova Movimentação
-    $('#btnNovaMovimentacao').on('click', function() {
+    $('#btnNovaMovimentacao').on('click', function () {
         $('#formMovimentacao')[0].reset();
         $('#produto_id').val('');
         $('#alertErros').addClass('d-none');
@@ -83,10 +83,10 @@ $(document).ready(function() {
     });
 
     // 3. Lógica do Autocomplete do Produto
-    $('#produto_busca').on('input', function() {
+    $('#produto_busca').on('input', function () {
         const termo = $(this).val().toLowerCase();
         const $sugestoes = $('#lista-sugestoes');
-        
+
         if (termo.trim() === '') {
             $('#produto_id').val('');
             $sugestoes.hide().empty();
@@ -94,8 +94,8 @@ $(document).ready(function() {
         }
 
         clearTimeout(buscaProdutosTimeout);
-        buscaProdutosTimeout = setTimeout(function() {
-            $.get(window.routes.produtosListarJson, { q: termo }, function(produtos) {
+        buscaProdutosTimeout = setTimeout(function () {
+            $.get(window.routes.produtosListarJson, { q: termo }, function (produtos) {
                 $sugestoes.empty();
                 if (produtos.length === 0) {
                     $sugestoes.text('Nenhum produto encontrado');
@@ -103,7 +103,7 @@ $(document).ready(function() {
                     return;
                 }
 
-                produtos.forEach(function(produto) {
+                produtos.forEach(function (produto) {
                     const $item = $('<button>', {
                         type: 'button',
                         class: 'list-group-item list-group-item-action bg-dark text-white border-secondary item-produto'
@@ -117,7 +117,7 @@ $(document).ready(function() {
         }, 250);
     });
 
-    $(document).on('click', '.item-produto', function() {
+    $(document).on('click', '.item-produto', function () {
         const id = $(this).data('id');
         const nome = $(this).data('nome');
         $('#produto_id').val(id);
@@ -125,7 +125,7 @@ $(document).ready(function() {
         $('#lista-sugestoes').hide().empty();
     });
 
-    $('#produto_busca').on('blur', function() {
+    $('#produto_busca').on('blur', function () {
         setTimeout(() => {
             if ($('#produto_id').val() === '') {
                 $(this).val('');
@@ -135,7 +135,7 @@ $(document).ready(function() {
     });
 
     // 4. Submit do formulário
-    $('#formMovimentacao').on('submit', function(e) {
+    $('#formMovimentacao').on('submit', function (e) {
         e.preventDefault();
 
         if (!$('#produto_id').val()) {
@@ -160,7 +160,7 @@ $(document).ready(function() {
             url: window.routes.movimentacoesStore,
             method: 'POST',
             data: $(this).serialize(),
-            success: function(response) {
+            success: function (response) {
                 $('#modalMovimentacao').modal('hide');
                 $btn.prop('disabled', false).text(textoOriginal);
                 tabelaMovimentacoes.ajax.reload(null, false);
@@ -173,12 +173,12 @@ $(document).ready(function() {
                     showConfirmButton: false
                 });
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 $btn.prop('disabled', false).text(textoOriginal);
                 if (xhr.status === 422) {
                     const erros = xhr.responseJSON.errors;
-                    $.each(erros, function(key, messages) {
-                        $.each(messages, function(i, msg) {
+                    $.each(erros, function (key, messages) {
+                        $.each(messages, function (i, msg) {
                             $('#listaErros').append('<li>' + msg + '</li>');
                         });
                     });

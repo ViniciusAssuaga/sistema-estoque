@@ -180,10 +180,10 @@ class ProdutoController extends Controller
 
     public function listarJson(Request $request)
     {
-        $termo = trim((string) $request->query('q', ''));
+        $termo = mb_strtolower(trim((string) $request->query('q', '')));
 
         $produtos = Produto::where('ativo', true)
-            ->when($termo !== '', fn ($query) => $query->where('nome', 'like', "%{$termo}%"))
+            ->when($termo !== '', fn($query) => $query->whereRaw('LOWER(nome) LIKE ?', ["%{$termo}%"]))
             ->select('id', 'nome', 'quantidade_estoque')
             ->orderBy('nome')
             ->limit(20)
