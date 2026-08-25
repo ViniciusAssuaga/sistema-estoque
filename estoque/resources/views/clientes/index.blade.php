@@ -3,7 +3,7 @@
 @section('title', 'Clientes')
 
 @push('styles')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 @endpush
 
 @section('content')
@@ -15,9 +15,9 @@
             <small class="text-secondary">Painel Server-Side com Laravel e DataTables</small>
         </div>
         @if(auth()->user()->canCreateRecords())
-            <button class="btn btn-laravel px-4 py-2" id="btnNovoCliente">
-                + Novo Cliente
-            </button>
+        <button class="btn btn-laravel px-4 py-2" id="btnNovoCliente">
+            + Novo Cliente
+        </button>
         @endif
     </div>
 
@@ -48,6 +48,8 @@
         <div class="modal-content bg-dark text-white border-secondary">
             <form id="formCliente">
                 <input type="hidden" id="cliente_id">
+                <input type="hidden" name="telefone" id="telefone">
+
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title" id="modalTitulo">Cadastrar Novo <span class="text-laravel">Cliente</span></h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -58,20 +60,33 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Nome <span class="text-laravel">*</span></label></label>
+                        <label class="form-label fw-semibold">Nome <span class="text-laravel">*</span></label>
                         <input type="text" name="nome" id="nome" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">E-mail <span class="text-laravel">*</span></label></label>
+                        <label class="form-label fw-semibold">E-mail <span class="text-laravel">*</span></label>
                         <input type="email" name="email" id="email" class="form-control" required>
                     </div>
+
+                    <!-- TELEFONE COM DDI E MÁSCARA DINÂMICA -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Telefone</label>
-                        <input type="text" name="telefone" id="telefone" class="form-control">
+                        <div class="input-group">
+                            <select id="ddi" name="ddi" class="form-select bg-dark text-white border-secondary" style="max-width: 125px; min-width: 125px;">
+                                <option value="+55" selected>+55 (BR)</option>
+                                <option value="+1">+1 (US)</option>
+                                <option value="+351">+351 (PT)</option>
+                                <option value="+34">+34 (ES)</option>
+                                <option value="+54">+54 (AR)</option>
+                            </select>
+                            <input type="text" id="telefone_numero" class="form-control" placeholder="(00) 00000-0000">
+                        </div>
                     </div>
+
+                    <!-- CPF/CNPJ COM MÁSCARA DINÂMICA -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">CPF/CNPJ</label>
-                        <input type="text" name="cpf_cnpj" id="cpf_cnpj" class="form-control">
+                        <input type="text" name="cpf_cnpj" id="cpf_cnpj" class="form-control" placeholder="000.000.000-00">
                     </div>
                 </div>
                 <div class="modal-footer border-secondary">
@@ -85,16 +100,17 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-    
-    <!-- Rotas relativas sem esquema (iniciadas com /) evitam Mixed Content no HTTPS -->
-    <script>
-        window.routes = {
-            clientesIndex: '/clientes',
-            clientesStore: '/clientes'
-        };
-    </script>
-    <script src="/js/datatables-defaults.js"></script>
-    <script src="/js/clientes.js?v={{ time() }}"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<!-- Plugin jQuery Mask -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
+<script>
+    window.routes = {
+        clientesIndex: '/clientes',
+        clientesStore: '/clientes'
+    };
+</script>
+<script src="/js/datatables-defaults.js"></script>
+<script src="/js/clientes.js?v={{ time() }}"></script>
 @endpush
