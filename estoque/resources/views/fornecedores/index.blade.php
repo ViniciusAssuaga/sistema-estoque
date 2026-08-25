@@ -3,7 +3,7 @@
 @section('title', 'Fornecedores')
 
 @push('styles')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
 @endpush
 
 @section('content')
@@ -15,9 +15,9 @@
             <small class="text-secondary">Painel de Fornecedores via API REST</small>
         </div>
         @if(auth()->user()->canCreateRecords())
-            <button class="btn btn-laravel px-4 py-2" id="btnNovoFornecedor">
-                + Novo Fornecedor
-            </button>
+        <button class="btn btn-laravel px-4 py-2" id="btnNovoFornecedor">
+            + Novo Fornecedor
+        </button>
         @endif
     </div>
 
@@ -49,6 +49,8 @@
         <div class="modal-content bg-dark text-white border-secondary">
             <form id="formFornecedor">
                 <input type="hidden" id="fornecedor_id">
+                <input type="hidden" name="telefone" id="telefone">
+
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title" id="modalTitulo">Cadastrar Novo <span class="text-laravel">Fornecedor</span></h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -68,7 +70,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">CNPJ <span class="text-laravel">*</span></label>
-                        <input type="text" name="cnpj" id="cnpj" class="form-control" required>
+                        <input type="text" name="cnpj" id="cnpj" class="form-control" placeholder="00.000.000/0000-00" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">E-mail</label>
@@ -76,7 +78,16 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Telefone</label>
-                        <input type="text" name="telefone" id="telefone" class="form-control">
+                        <div class="input-group">
+                            <select class="form-select bg-dark text-white border-secondary" id="ddi" name="ddi" style="max-width: 120px;">
+                                <option value="+55" selected>+55 (BR)</option>
+                                <option value="+1">+1 (US)</option>
+                                <option value="+351">+351 (PT)</option>
+                                <option value="+34">+34 (ES)</option>
+                                <option value="+54">+54 (AR)</option>
+                            </select>
+                            <input type="text" class="form-control" id="telefone_numero" placeholder="(00) 00000-0000">
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer border-secondary">
@@ -92,6 +103,8 @@
 @push('scripts')
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         window.routes = {
@@ -99,7 +112,6 @@
             fornecedoresStore: "/api/fornecedores"
         };
     </script>
-    <!-- Substituídos os assets com URL absoluta por caminhos relativos -->
     <script src="/js/datatables-defaults.js"></script>
     <script src="/js/fornecedores.js?v={{ time() }}"></script>
 @endpush

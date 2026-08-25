@@ -1,0 +1,15 @@
+Credenciais do PostgreSQL (estoque-teste-db):
+
+Username: postgres
+
+Password: UV2tN6trnWvpJQu
+
+Hostname: estoque-teste-db.internal
+
+Flycast: fdaa:b9:5f05:0:1::2
+
+Proxy port: 5432
+
+Postgres port: 5433
+
+Connection string: postgres://postgres:UV2tN6trnWvpJQu@estoque-teste-db.flycast:5432

@@ -17,8 +17,18 @@ jobs:
       - name: Setup FlyCTL
         uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - name: Deploy to Fly.io
-        run: flyctl deploy --remote-only
+      # Deploy da branch main para Produção (usando fly.toml)
+      - name: Deploy Produção (main)
+        if: github.ref == 'refs/heads/main'
+        run: flyctl deploy --remote-only --config fly.toml
+        working-directory: ./estoque
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      # Deploy da branch teste para Staging (usando fly.staging.toml)
+      - name: Deploy Teste (teste)
+        if: github.ref == 'refs/heads/teste'
+        run: flyctl deploy --remote-only --config fly.staging.toml
         working-directory: ./estoque
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
