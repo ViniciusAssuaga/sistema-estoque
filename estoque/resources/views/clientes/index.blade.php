@@ -16,7 +16,7 @@
         </div>
         @if(auth()->user()->canCreateRecords())
         <button class="btn btn-laravel px-4 py-2" id="btnNovoCliente">
-            + Novo Cliente yyy
+            + Novo Cliente
         </button>
         @endif
     </div>
