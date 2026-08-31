@@ -13,10 +13,12 @@
         border: 1px solid #495057;
         transition: all 0.2s ease-in-out;
     }
+
     .btn-filtro-grafico:hover {
         color: #fff;
         border-color: #6c757d;
     }
+
     .btn-filtro-grafico.active {
         background-color: transparent !important;
         color: var(--laravel-red, #d63327) !important;
@@ -105,11 +107,11 @@
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-transparent border-bottom border-dark py-3 d-flex justify-content-between align-items-center">
                     <h5 class="card-title fw-bold mb-0 text-white" id="tituloGraficoFluxo">
-                        <i class="bi bi-graph-up text-laravel me-2"></i> Fluxo de Movimentações (Últimos 7 Dias)
+                        <i class="bi bi-graph-up text-laravel me-2"></i> Fluxo de Movimentações (Últimos 12 Meses)
                     </h5>
                     <div class="btn-group btn-group-sm" role="group" aria-label="Filtro de período">
-                        <button type="button" class="btn btn-filtro-grafico active" id="btnFiltroSemanal">Semanal</button>
-                        <button type="button" class="btn btn-filtro-grafico" id="btnFiltroMensal">Mensal</button>
+                        <button type="button" class="btn btn-filtro-grafico" id="btnFiltroSemanal">Semanal</button>
+                        <button type="button" class="btn btn-filtro-grafico active" id="btnFiltroMensal">Mensal</button>
                         <button type="button" class="btn btn-filtro-grafico" id="btnFiltroAnual">Anual</button>
                     </div>
                 </div>
@@ -154,24 +156,24 @@
                             </thead>
                             <tbody>
                                 @forelse($ultimasMovimentacoes ?? [] as $mov)
-                                    <tr>
-                                        <td><span class="fw-semibold text-white">{{ $mov->produto->nome ?? 'Produto Removido' }}</span></td>
-                                        <td>
-                                            @if($mov->tipo === 'entrada')
-                                                <span class="badge bg-success text-white">Entrada</span>
-                                            @else
-                                                <span class="badge bg-danger text-white">Saída</span>
-                                            @endif
-                                        </td>
-                                        <td class="{{ $mov->tipo === 'entrada' ? 'text-success' : 'text-danger' }} fw-bold">
-                                            {{ $mov->tipo === 'entrada' ? '+' : '-' }}{{ $mov->quantidade }}
-                                        </td>
-                                        <td class="text-secondary small">{{ $mov->created_at ? $mov->created_at->format('d/m/Y H:i') : '-' }}</td>
-                                    </tr>
+                                <tr>
+                                    <td><span class="fw-semibold text-white">{{ $mov->produto->nome ?? 'Produto Removido' }}</span></td>
+                                    <td>
+                                        @if($mov->tipo === 'entrada')
+                                        <span class="badge bg-success text-white">Entrada</span>
+                                        @else
+                                        <span class="badge bg-danger text-white">Saída</span>
+                                        @endif
+                                    </td>
+                                    <td class="{{ $mov->tipo === 'entrada' ? 'text-success' : 'text-danger' }} fw-bold">
+                                        {{ $mov->tipo === 'entrada' ? '+' : '-' }}{{ $mov->quantidade }}
+                                    </td>
+                                    <td class="text-secondary small">{{ $mov->created_at ? $mov->created_at->format('d/m/Y H:i') : '-' }}</td>
+                                </tr>
                                 @empty
-                                    <tr>
-                                        <td colspan="4" class="text-center text-secondary py-3">Nenhuma movimentação registrada.</td>
-                                    </tr>
+                                <tr>
+                                    <td colspan="4" class="text-center text-secondary py-3">Nenhuma movimentação registrada.</td>
+                                </tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -198,18 +200,18 @@
                             </thead>
                             <tbody>
                                 @forelse($produtosEstoqueBaixo ?? [] as $prod)
-                                    <tr>
-                                        <td><span class="fw-semibold text-white">{{ $prod->nome }}</span></td>
-                                        <td><span class="text-danger fw-bold">{{ $prod->quantidade_estoque }}</span></td>
-                                        <td>{{ $prod->estoque_minimo }}</td>
-                                        <td class="text-end">
-                                            <a href="{{ route('produtos.index') }}?q={{ urlencode($prod->nome) }}" class="btn btn-sm btn-outline-warning py-0 px-2">Repor</a>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td><span class="fw-semibold text-white">{{ $prod->nome }}</span></td>
+                                    <td><span class="text-danger fw-bold">{{ $prod->quantidade_estoque }}</span></td>
+                                    <td>{{ $prod->estoque_minimo }}</td>
+                                    <td class="text-end">
+                                        <a href="{{ route('produtos.index') }}?q={{ urlencode($prod->nome) }}" class="btn btn-sm btn-outline-warning py-0 px-2">Repor</a>
+                                    </td>
+                                </tr>
                                 @empty
-                                    <tr>
-                                        <td colspan="4" class="text-center text-secondary py-3">Nenhum produto com estoque crítico.</td>
-                                    </tr>
+                                <tr>
+                                    <td colspan="4" class="text-center text-secondary py-3">Nenhum produto com estoque crítico.</td>
+                                </tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -232,18 +234,18 @@
             return [];
         }
 
-        // Recupera os dados injetados pelo Blade
-        const rawSemanalLabels = @json($diasLabels ?? []);
-        const rawSemanalEntradas = @json($dadosEntradas ?? []);
-        const rawSemanalSaidas = @json($dadosSaidas ?? []);
+        // Recupera os dados injetados pelo Blade via JSON.parse para evitar erro de decorator
+        const rawSemanalLabels = JSON.parse('{!! json_encode($diasLabels ?? []) !!}');
+        const rawSemanalEntradas = JSON.parse('{!! json_encode($dadosEntradas ?? []) !!}');
+        const rawSemanalSaidas = JSON.parse('{!! json_encode($dadosSaidas ?? []) !!}');
 
-        const rawMensalLabels = @json($mesesLabels ?? []);
-        const rawMensalEntradas = @json($dadosEntradasMensal ?? []);
-        const rawMensalSaidas = @json($dadosSaidasMensal ?? []);
+        const rawMensalLabels = JSON.parse('{!! json_encode($mesesLabels ?? []) !!}');
+        const rawMensalEntradas = JSON.parse('{!! json_encode($dadosEntradasMensal ?? []) !!}');
+        const rawMensalSaidas = JSON.parse('{!! json_encode($dadosSaidasMensal ?? []) !!}');
 
-        const rawAnualLabels = @json($anosLabels ?? []);
-        const rawAnualEntradas = @json($dadosEntradasAnual ?? []);
-        const rawAnualSaidas = @json($dadosSaidasAnual ?? []);
+        const rawAnualLabels = JSON.parse('{!! json_encode($anosLabels ?? []) !!}');
+        const rawAnualEntradas = JSON.parse('{!! json_encode($dadosEntradasAnual ?? []) !!}');
+        const rawAnualSaidas = JSON.parse('{!! json_encode($dadosSaidasAnual ?? []) !!}');
 
         // Trata os dados semanais
         let dadosSemanalLabels = paraArray(rawSemanalLabels);
@@ -304,15 +306,15 @@
             }
         };
 
-        // Inicialização do Gráfico de Movimentações
+        // Inicialização do Gráfico de Movimentações (Padrão: Mensal)
         const ctxMov = document.getElementById('graficoMovimentacoes').getContext('2d');
         const chartMov = new Chart(ctxMov, {
             type: 'line',
             data: {
-                labels: dadosGrafico.semanal.labels,
+                labels: dadosGrafico.mensal.labels,
                 datasets: [{
                     label: 'Entradas',
-                    data: dadosGrafico.semanal.entradas,
+                    data: dadosGrafico.mensal.entradas,
                     borderColor: '#198754',
                     backgroundColor: 'rgba(25, 135, 84, 0.1)',
                     borderWidth: 2,
@@ -320,7 +322,7 @@
                     fill: true
                 }, {
                     label: 'Saídas',
-                    data: dadosGrafico.semanal.saidas,
+                    data: dadosGrafico.mensal.saidas,
                     borderColor: '#D63327',
                     backgroundColor: 'rgba(214, 51, 39, 0.1)',
                     borderWidth: 2,
@@ -333,18 +335,32 @@
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        labels: { color: '#E0E0E0', font: { size: 12 } }
+                        labels: {
+                            color: '#E0E0E0',
+                            font: {
+                                size: 12
+                            }
+                        }
                     }
                 },
                 scales: {
                     x: {
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: '#A0A0A0' }
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        },
+                        ticks: {
+                            color: '#A0A0A0'
+                        }
                     },
                     y: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: '#A0A0A0', precision: 0 }
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.05)'
+                        },
+                        ticks: {
+                            color: '#A0A0A0',
+                            precision: 0
+                        }
                     }
                 }
             }
@@ -390,8 +406,8 @@
 
         // Gráfico de Categorias Populares
         const ctxCat = document.getElementById('graficoCategorias').getContext('2d');
-        const rawCatLabels = @json($categoriasLabels ?? []);
-        const rawCatTotais = @json($categoriasTotais ?? []);
+        const rawCatLabels = JSON.parse('{!! json_encode($categoriasLabels ?? []) !!}');
+        const rawCatTotais = JSON.parse('{!! json_encode($categoriasTotais ?? []) !!}');
 
         new Chart(ctxCat, {
             type: 'doughnut',
@@ -409,7 +425,13 @@
                 plugins: {
                     legend: {
                         position: 'bottom',
-                        labels: { color: '#E0E0E0', font: { size: 11 }, boxWidth: 12 }
+                        labels: {
+                            color: '#E0E0E0',
+                            font: {
+                                size: 11
+                            },
+                            boxWidth: 12
+                        }
                     }
                 }
             }
